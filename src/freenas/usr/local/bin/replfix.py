@@ -117,11 +117,10 @@ def RemoteFix(testonly = False, debug = False):
             log.debug("%s %s" % (sshcmd, rzfscmd))
         else:
             zfsproc = pipeopen("%s %s" % (sshcmd, rzfscmd))
-            output, error = sshproc.communicate()
+            output, error = zfsproc.communicate()
             error = error.strip('\n').strip('\r').replace('WARNING: enabled NONE cipher', '')
-            if sshproc.returncode:
+            if zfsproc.returncode:
                 log.debug("Could not set readonly")
-        # Hey, how do I set it recursively?
         if recursive:
             zfscmd = "zfs list -H -o name -r " + localfs
             zfsproc = pipeopen(zfscmd)
@@ -139,9 +138,9 @@ def RemoteFix(testonly = False, debug = False):
                     log.debug("%s %s" % (sshcmd, rzfscmd))
                     if not testonly:
                         rzfsproc = pipeopen("%s %s" % (sshcmd, rzfscmd))
-                        output, error = sshproc.communicate()
+                        output, error = rzfsproc.communicate()
                         error = error.strip('\n').strip('\r').replace('WARNING: enabled NONE cipher', '')
-                        if sshproc.returncode:
+                        if rzfsproc.returncode:
                             log.debug("Could not inherit readonly on remote %s%s: %s" % (
                                     remotefs,
                                     remote_dataset,
@@ -172,7 +171,10 @@ def main(no_delete, hold, dataset, skipstate, remote=False, debug=False, testonl
                         print "%s hold found on %s" % (hold, snap)
                     else:
                         print "Destroying %s hold on %s" % (hold, snap)
-                        ret = os.system("zfs release %s %s" % (item.split()[1], snap))
+                        zfscmd = "zfs release %s %s" % (item.split()[1], snap)
+                        if debug:
+                            print zfscmd
+                        ret = os.system(zfscmd)
                         if ret != 0:
                             print "Error releasing hold on %s" % snap
                         else:
@@ -187,9 +189,9 @@ def main(no_delete, hold, dataset, skipstate, remote=False, debug=False, testonl
             if pool != "freenas-boot":
                 print "Removing freenas:state on %s" % pool
                 zfscmd = "zfs inherit -r freenas:state %s" % pool
-                if testonly:
+                if debug or testonly:
                     print zfscmd
-                else:
+                if not testonly:
                     ret = os.system(zfscmd)
                     if ret != 0:
                         print "Error removing freenas:state on %s" % pool
