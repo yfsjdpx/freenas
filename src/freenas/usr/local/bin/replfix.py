@@ -156,10 +156,12 @@ def main(no_delete, hold, dataset, skipstate, remote=False, debug=False, testonl
     # It can be used to  "root" the list eg: -d tank/whatever would only
     # operate on snapshots in the tank/whatever dataset or it's descendants
 
-    snaplist = os.popen("zfs list -t snapshot | awk '{print $1}'").readlines()
-    snaplist = [x for x in snaplist[1:] if not x.startswith("freenas-boot")]
+    zfscmd = "zfs list -H -t snapshot -o name"
     if dataset:
-        snaplist = [x for x in snaplist if x.startswith(dataset)]
+        zfscmd = zfscmd + "-r %s" % dataset
+    snaplist = os.popen("zfs list -H -t snapshot -o name").readlines()
+    snaplist = [x for x in snaplist if not x.startswith("freenas-boot")]
+                        
     print "Checking for holds"
     hold_delete = False
     for snap in snaplist:
@@ -183,7 +185,7 @@ def main(no_delete, hold, dataset, skipstate, remote=False, debug=False, testonl
         print "No holds found"
 
     if not skipstate:
-        poollist = os.popen("zpool list -H | awk '{print $1}'").readlines()
+        poollist = os.popen("zpool list -H -o name").readlines()
         for pool in poollist:
             pool = pool.strip()
             if pool != "freenas-boot":
