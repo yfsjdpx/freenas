@@ -193,14 +193,14 @@ state.
    configuration database in order to load the current configuration values. If your intent is to make configuration changes, rather than operating system
    changes, make a backup of the configuration database first using :menuselection:`System --> General` --> Save Config.
 
-As seen in :numref:`Figure %s: Viewing Boot Environments <tn_be1a>`, two boot environments are created when TrueNAS® is installed. The system will boot into the *default* boot environment
+As seen in :numref:`Figure %s: Viewing Boot Environments <tn_be1b>`, two boot environments are created when TrueNAS® is installed. The system will boot into the *default* boot environment
 and users can make their changes and update from this version. The other boot environment, named *Initial-Install* can be booted into if the system needs to be returned to
 a pristine, non-configured version of the installation. If you used the initial configuration wizard, a third boot environment called *Wizard-date* is also
 created indicating the date and time the wizard was run.
 
-.. _tn_be1a:
+.. _tn_be1b:
 
-.. figure:: images/tn_be1a.png
+.. figure:: images/tn_be1b.png
 
 Each boot environment entry contains the following information:
 
@@ -212,17 +212,18 @@ Each boot environment entry contains the following information:
 
 Highlight an entry to view its configuration buttons.  The following configuration buttons are available:
 
-* **Rename:** used to change the name of the boot environment.
-
 * **Activate:** will only appear on entries which are not currently set to "Active". Changes the selected entry to the default boot entry on next boot. Its
   status will change to "On Reboot" and the current "Active" entry will change from "On Reboot, Now" to "Now", indicating that it was used on the last boot
   but won't be used on the next boot.
 
-* **Clone:** used to create a copy of the highlighted boot environment.
-
 * **Delete:** used to delete the highlighted entries, which also removes these entries from the boot menu. Since you can not delete an entry that has been activated, this button will
   not appear for the active boot environment. If you need to delete an entry that you created and it is currently  activated, first activate another entry, which will clear the
-  *On reboot* field of the currently activated entry.
+  *On reboot* field of the currently activated entry. Note that this button will not be displayed for the "default" boot environment as this entry is needed in order to return the system to
+  the original installation state.
+  
+* **Rename:** used to change the name of the boot environment.
+  
+* **Clone:** used to create a copy of the highlighted boot environment.
 
 The buttons above the boot entries can be used to:
 
@@ -317,6 +318,10 @@ Advanced
 |                                         |                                  | but only sends an email when the system reboots or encounters an error       |
 |                                         |                                  |                                                                              |
 +-----------------------------------------+----------------------------------+------------------------------------------------------------------------------+
+| Remote Graphite Server hostname         | string                           | input the IP address or hostname of a remote server that is running          |
+|                                         |                                  | a `Graphite <http://graphite.wikidot.com/>`_ server                          |
+|                                         |                                  |                                                                              |
++-----------------------------------------+----------------------------------+------------------------------------------------------------------------------+
 
 If you make any changes, click the "Save" button.
 
@@ -333,7 +338,7 @@ backup will be saved as a binary file. To restore a saved backup, use the "12) R
 
 .. warning:: the backup function **IGNORES ENCRYPTED POOLS**. Do not use it to backup systems with encrypted pools.
 
-**Save Debug:** used to generate a text file of diagnostic information. It will prompt for the location to save the generated ASCII text file.
+**Save Debug:** used to generate a text file of diagnostic information. Once the debug is created, it will prompt for the location to save the generated ASCII text file.
 
 .. _backup1:
 
@@ -381,19 +386,11 @@ backup will be saved as a binary file. To restore a saved backup, use the "12) R
 Autotune
 ~~~~~~~~
 
-TrueNAS® provides an autotune script which attempts to optimize the system. It is recommended to discuss system optimization with an iXsystems support
-engineer prior to running this script and to review the results with the support engineer.
+TrueNAS® provides an autotune script which attempts to optimize the system. The "Enable autotune" checkbox in :menuselection:`System --> Advanced` is checked by default, meaning that
+this script runs automatically. It is recommended to not disable this setting unless you are advised to do so by an iXsystems support engineer.
 
-The "Enable autotune" checkbox in :menuselection:`System --> Advanced` is unchecked by default. Check this box if you would like the autotuner to run
-at boot time. If you would like the script to run immediately, you will need to reboot the system.
-
-If the autotune script finds any settings that need adjusting, the changed values will appear in :menuselection:`System --> Tunables`. If you do not like the
-changes, you can modify the values that are displayed in the GUI and your changes will override the values that were created by the autotune script. However,
-if you delete a tunable that was created by autotune, it will be recreated at next boot. This is because autotune only creates values that do not already
-exist.
-
-If you are trying to increase the performance of your TrueNAS® system and suspect that the current hardware may be limiting performance, try enabling
-autotune.
+If the autotune script adjusts any settings, the changed values will appear in :menuselection:`System --> Tunables`. While you can modify, which will override, these values, speak to your
+support engineer before doing so as this may have a negative impact on system performance. Note that if you delete a tunable that was created by autotune, it will be recreated at next boot.
 
 If you wish to read the script to see which checks are performed, the script is located in :file:`/usr/local/bin/autotune`.
 
@@ -407,7 +404,7 @@ Email
 that can be configured using the Email tab.
 
 .. note:: it is important to configure the system so that it can successfully send emails. An automatic script sends a nightly email to the *root* user
-   account containing important information such as the health of the disks. Alert events are also emailed to the *root* user account.
+   account containing important information such as the health of the disks. :ref:`Alert` events are also emailed to the *root* user account.
 
 .. _tn_system4:
 
@@ -471,7 +468,10 @@ The system dataset can optionally be configured to also store the system log and
 information, moving these to the system dataset will prevent :file:`/var/` on the device holding the operating system from filling up as :file:`/var/` has
 limited space. 
 
-Use the drop-down menu to select the ZFS volume (pool) to contain the system dataset.
+Use the drop-down menu to select the ZFS volume (pool) to contain the system dataset. 
+
+.. note:: it is recommended to store the system dataset on the :file:`freenas-boot` pool. For this reason, a yellow system alert will be generated when the system dataset is configured to
+   use another pool.
 
 To store the system log on the system dataset, check the "Syslog" box.
 
@@ -496,7 +496,7 @@ Tunables
 #. **FreeBSD loaders:** a loader is only loaded when a FreeBSD-based system boots and can be used to pass a parameter to the kernel or to load an additional
    kernel module such as a FreeBSD hardware driver.
 
-#. **FreeBSD rc.conf options:** `rc.conf(5) <https://www.freebsd.org/cgi/man.cgi?query=rc.conf&apropos=0&sektion=0&manpath=FreeBSD+9.3-RELEASE>`_ is used to
+#. **FreeBSD rc.conf options:** `rc.conf(5) <https://www.freebsd.org/cgi/man.cgi?query=rc.conf>`_ is used to
    pass system configuration options to the system startup scripts as the system boots. Since TrueNAS® has been optimized for storage, not all of the
    services mentioned in rc.conf(5) are available for configuration.
 
@@ -556,7 +556,7 @@ attempting to change it from :ref:`Shell`. For example, to change the value of *
 :command:`sysctl net.inet.tcp.delay_ack=1`. If the sysctl value is read-only, an error message will indicate that the setting is read-only. If you do not get
 an error, the setting is now applied. For the setting to be persistent across reboots, the sysctl must still be added in :menuselection:`System --> Tunables`.
 
-The GUI does not display the sysctls that are pre-set when TrueNAS® is installed. TrueNAS® 9.3 ships with the following sysctls set::
+The GUI does not display the sysctls that are pre-set when TrueNAS® is installed. TrueNAS® |version| ships with the following sysctls set::
 
  kern.metadelay=3
  kern.dirdelay=4
@@ -571,7 +571,7 @@ The GUI does not display the sysctls that are pre-set when TrueNAS® is installe
 
 **Do not add or edit these default sysctls** as doing so may render the system unusable.
 
-The GUI does not display the loaders that are pre-set when TrueNAS® is installed. TrueNAS® 9.3 ships with the following loaders set::
+The GUI does not display the loaders that are pre-set when TrueNAS® is installed. TrueNAS® |version| ships with the following loaders set::
 
  autoboot_delay="2"
  loader_logo="truenas-logo"
@@ -579,30 +579,27 @@ The GUI does not display the loaders that are pre-set when TrueNAS® is installe
  loader_brand="truenas-brand"
  loader_version=" "
  kern.cam.boot_delay=10000
- geom_mirror_load="YES"
- geom_stripe_load="YES"
- geom_raid_load="YES"
- geom_raid3_load="YES"
- geom_raid5_load="YES"
- geom_gate_load="YES"
- geom_multipath_load="YES"
- hwpmc_load="YES"
  debug.debugger_on_panic=1
  debug.ddb.textdump.pending=1
  hw.hptrr.attach_generic=0
+ ispfw_load="YES"
+ module_path="/boot/kernel;/boot/modules;/usr/local/modules"
+ net.inet6.ip6.auto_linklocal="0"
+ vfs.zfs.vol.mode=2
+ kern.geom.label.disk_ident.enable="0"
+ hint.ahciem.0.disabled="1"
+ hint.ahciem.1.disabled="1"
+ kern.msgbufsize="524288"
  kern.ipc.nmbclusters="262144"
  kern.hwpmc.nbuffers="4096"
  kern.hwpmc.nsamples="4096"
  hw.memtest.tests="0"
- module_path="/boot/kernel;/boot/modules;/usr/local/modules"
- net.inet6.ip6.auto_linklocal="0"
- kern.msgbufsize="524288"
  vfs.zfs.trim.enabled="0"
- vfs.zfs.vol.mode=2
+ kern.cam.ctl.ha_mode=2
 
 **Do not add or edit the default tunables** as doing so may render the system unusable.
 
-The ZFS version used in 9.3 deprecates the following tunables::
+The ZFS version used in |version| deprecates the following tunables::
 
  vfs.zfs.write_limit_override
  vfs.zfs.write_limit_inflated
@@ -654,8 +651,21 @@ case, this screen will close once the updates are downloaded and the downloaded 
 in :numref:`Figure %s: Update Options <tn_update1>`. When you are ready to apply the previously downloaded updates, click the "Apply Pending Updates" button and be aware that the system may
 reboot after the updates are applied.
 
-While the "Manual Update" button can be used to manually upgrade the operating system, this button is only included for backwards compatibility as this method
-of upgrading is no longer the recommended way to upgrade. Instead, select a train and apply the necessary updates to upgrade the operating system.
+.. _Updating an HA System:
+
+Updating an HA System
+~~~~~~~~~~~~~~~~~~~~~
+
+If the TrueNAS® array has been configured for High Availability (HA), the update process must be started on the active node. Once the update is complete, the standby node will automatically
+reboot. Wait for it to come back up by monitoring the remote console or the graphical administrative interface of the standby node.
+
+At this point, the active mode may issue an alert indicating that there is a firmware version mismatch. This is expected when an update also updates the HBA version.
+
+Once the standby node has finished booting up, it is important to perform a failover by rebooting the current active node. This action tells the standby node to import the current
+configuration and restart its services.
+
+Once the previously active node comes back up as a standby node, use :menuselection:`System --> Update` to apply the update on the current active node (which was previously the passive
+node). Once complete, the now standby node will reboot a second time.
 
 .. _If Something Goes Wrong:
 
@@ -730,10 +740,10 @@ If your organization already has a CA, you can import the CA's certificate and k
 | Certificate          | string               | mandatory; paste in the certificate for the CA                                                    |
 |                      |                      |                                                                                                   |
 +----------------------+----------------------+---------------------------------------------------------------------------------------------------+
-| Private Key          | string               | paste the private key associated with the certificate so that it can be used to sign certificates |
+| Private Key          | string               | if there is a private key associated with the "Certificate", paste it here                        |
 |                      |                      |                                                                                                   |
 +----------------------+----------------------+---------------------------------------------------------------------------------------------------+
-| Passphrase           | string               | if the private key is protected by a passphrase, enter it here and repeat it in the "Confirm      |
+| Passphrase           | string               | if the "Private Key" is protected by a passphrase, enter it here and repeat it in the "Confirm    |
 |                      |                      | Passphrase" field                                                                                 |
 |                      |                      |                                                                                                   |
 +----------------------+----------------------+---------------------------------------------------------------------------------------------------+
@@ -804,7 +814,7 @@ If you click the entry for a CA, the following buttons become available:
   X.509 certificate.
 
 * **Export Private Key:** will prompt to browse to the location, on the system being used to access the TrueNAS® system, to save a copy of the CA's private
-  key.
+  key. Note that this option only appears if the CA has a private key.
 
 * **Delete:** will prompt to confirm before deleting the CA.
 
@@ -1017,7 +1027,7 @@ Next, go to :menuselection:`Network --> Interfaces --> Add Interface`. The HA li
 
 * **Critical for Failover:** check this box if a failover should occur when this interface becomes unavailable. How many seconds it takes for that failover to occur depends upon the
   value of the "Timeout", as described in Table 5.12a. This checkbox is interface-specific, allowing you to have different settings for a management network and a data network. Note that
-  checking this box requires the *Virtual IP* to be set.
+  checking this box requires the *Virtual IP* to be set and that at least one interface needs to be set as "Critical for Failover" in order to configure failover.
 
 * **Group:** this drop-down menu is greyed out unless the "Critical for Failover" checkbox is checked. This box allows you to group multiple, critical for failover interfaces. In this case,
   all of the interfaces in a group must go down before failover occurs. This can be a useful configuration in a multipath scenario.
@@ -1041,14 +1051,15 @@ The options available in :menuselection:`System --> Failovers` are shown in :num
 | **Setting**    | **Value**      | **Description**                                                                                                                                       |
 |                |                |                                                                                                                                                       |
 +================+================+=======================================================================================================================================================+
-| Disabled       | checkbox       | when checked, disables failover which changes the "HA Enabled" icon to "HA Disabled" and activates the "Master" field                                 |
+| Disabled       | checkbox       | when checked, administratively disables failover which changes the "HA Enabled" icon to "HA Disabled" and activates the "Master" field; this will     |
+|                |                | generate an error message if the standby node is not responding or failover has not been configured                                                   |
 |                |                |                                                                                                                                                       |
 +----------------+----------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
 | Master         | checkbox       | greyed out unless "Disabled" is checked; in that case, this box is automatically checked on the master system, allowing the master to automatically   |
 |                |                | takeover when the "Disabled" box is unchecked                                                                                                         |
 |                |                |                                                                                                                                                       |
 +----------------+----------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
-|Timeout         | integer        | specifies, in seconds, how quickly failover occurs after a network failure; the default of *0* indicates that failover either occurs immediately or,  |
+| Timeout        | integer        | specifies, in seconds, how quickly failover occurs after a network failure; the default of *0* indicates that failover either occurs immediately or,  |
 |                |                | if the system is using a link aggregation, after 2 seconds                                                                                            |
 |                |                |                                                                                                                                                       |
 +----------------+----------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+

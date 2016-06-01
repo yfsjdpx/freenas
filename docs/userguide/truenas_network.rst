@@ -160,7 +160,7 @@ This screen also allows you to configure an alias for the interface. If you wish
 wish to configure. To delete an alias, highlight the interface in the tree to access its "Edit" screen. Be sure to check the "Delete" checkbox associated with
 the alias. If you instead click the "Delete" button at the bottom of this screen, you will delete the whole interface, not just the alias.
 
-.. note:: the ability to delete interfaces is disabled if :ref:`Failovers` has been configured.
+.. note:: the ability to delete interfaces is disabled if :ref:`Failovers` has been configured and enabled.
 
 When configuring multiple interfaces, they can not be members of the same subnet. Check the subnet mask if you receive an error when setting the IP addresses
 on multiple interfaces.
@@ -266,8 +266,7 @@ Requires a switch which supports IEEE 802.3ad static link aggregation.
 
 **None:** this protocol disables any traffic without disabling the lagg interface itself.
 
-**Do not** configure the interfaces used in the lagg device before creating the lagg device.
-
+.. note:: when using LACP, verify that the switch is configured for active LACP as passive LACP is not supported.
 
 Considerations When Using LACP, MPIO, NFS, or ESXi
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -297,7 +296,8 @@ Creating a Link Aggregation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Before** creating a link aggregation, double-check that no interfaces have been manually configured in `Network --> Interfaces --> View Interfaces`. If any
-configured interfaces exist, delete them as lagg creation will fail if any interfaces are manually configured.
+configured interfaces exist, delete them as 
+**lagg creation will fail if any interfaces are manually configured**.
 
 :numref:`Figure %s: Creating a lagg Interface <lagg4>` shows the configuration options when adding a lagg interface using `Network --> Link Aggregations --> Create Link Aggregation`.
 

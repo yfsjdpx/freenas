@@ -260,6 +260,10 @@ permissions of the files and directories that are created by the client.
 The chapter on :ref:`Sharing` contains configuration examples for several types of permission scenarios. This section provides an overview of the screen that
 is used to set permissions.
 
+.. note:: in order for users and groups to be available, they must either be first created using the instructions in :ref:`Account` or imported from a directory service using the
+   instructions in :ref:`Directory Service`. If more than 50 users or groups are available, the drop-down menus described in this section will automatically truncate their display to
+   50 for performance reasons. In this case, start to type in the desired user or group name so that the display narrows its search to matching results.
+
 Once a volume or dataset is created, it will be listed by its mount point name in :menuselection:`Storage --> Volumes --> View Volumes`. If you click the "Change Permissions" icon for a
 specific volume/dataset, you will see the screen shown in :numref:`Figure %s: Changing Permissions on a Volume or Dataset <perms1>`. Table 8.1c summarizes the options in this screen.
 
@@ -601,6 +605,34 @@ are described in Table 8.1f.
 Clicking a disk's entry will also display its "Identify", "Reset LED", and "Wipe" buttons. The "Wipe" button can be used to blank a disk while providing a
 progress bar of the wipe's status. Use this option before discarding a disk.
 
+.. _View Enclosure:
+
+View Enclosure
+~~~~~~~~~~~~~~
+
+Click :menuselection:`Storage --> Volumes --> View Enclosure` to receive a status summary of the appliance's disks and hardware. An example is shown in
+:numref:`Figure %s: View Enclosure <tn_enclosure1>`.
+
+.. _tn_enclosure1:
+
+.. figure:: images/tn_enclosure1.png
+
+This screen is divided into the following sections:
+
+**Array Device Slot:** has an entry for each slot in the storage array, indicating the disk's current status and FreeBSD device name. To blink the status light for that disk as a visual indicator, click its "Identify" button. 
+
+**Cooling:** has an entry for each fan, its status, and its RPM. 
+
+**Enclosure:** shows the status of the enclosure.
+
+**Power Supply:** shows the status of each power supply.
+
+**SAS Expander:** shows the status of the expander.
+
+**Temperature Sensor:** shows the current temperature of each expander and the disk chassis.
+
+**Voltage Sensor:** shows the current voltage for each sensor, VCCP, and VCC.
+
 .. _View Volumes:
 
 View Volumes
@@ -728,6 +760,8 @@ be used if the passphrase is forgotten. **Always immediately** add a recovery ke
    downloaded keys, take care that that system and its backups are protected. Anyone who has the keys has the ability to re-import the disks should they be
    discarded or stolen.
 
+.. warning:: if a re-key fails on a multi-disk system, an alert will be generated. **Do not ignore this alert** as doing so may result in the loss of data.    
+   
 .. _View Multipaths:
 
 View Multipaths
@@ -768,8 +802,9 @@ you have located the failed device in the GUI, perform the following steps:
        the disk again before proceeding.
 
 #.  Once the disk has been replaced and is showing as OFFLINE, click the disk again and then click its "Replace" button. Select the replacement disk from the drop-down menu
-    and click the "Replace Disk" button. If the disk is a member of an encrypted ZFS pool, the menu will also prompt you to input and confirm the passphrase for the pool.
-    Once you click the "Replace Disk" button, the ZFS pool will start to resilver and the status of the resilver will be displayed.
+    and click the "Replace Disk" button. Once you click the "Replace Disk" button, the ZFS pool will start to resilver and the status of the resilver will be displayed.
+    
+#. Once the drive replacement process is complete, readd the replaced disk in the :ref:`S.M.A.R.T. Tests` screen.
 
 In the example shown in :numref:`Figure %s: Replacing a Failed Disk <replace>`, a failed disk is being replaced by disk *ada5* in the volume named :file:`volume1`.
 
@@ -853,168 +888,6 @@ places the system in a degraded state. Since a failure at this point could be di
 at a time and wait for the resilver process to complete on the replaced drive before replacing the next drive. Once all the drives are replaced and the resilver completes, you
 should see the added space in the pool. 
 
-To verify the autoexpand property, run this command from :ref:`Shell`, replacing *Vol1* with the name of the volume to expand::
-
- zpool get autoexpand Vol1
- NAME	PROPERTY	VALUE			SOURCE
- Vol1 	autoexpand 	on 			local
-
-If autoexpansion is not enabled, enable it by specifying the name of the ZFS volume::
-
- zpool set autoexpand=on Vol1 
-
-.. _Enabling ZFS Pool Expansion:
-
-Enabling ZFS Pool Expansion
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-It is recommended to enable the autoexpand property before you start replacing drives. If the property is not enabled before replacing some or all of the
-drives, extra configuration is needed to inform ZFS of the expanded capacity.
-
-Verify that autoexpand is set as described in the previous section. Then, bring each of the drives back online with the following command, replacing the
-volume name and GPT ID for each disk in the ZFS pool::
-
- zpool online -e Vol1 gptid/xxx
-
-Online one drive at a time and check the status using the following example. If a drive starts to resilver, you need to wait for the resilver to complete
-before proceeding to online the next drive.
-
-To find the GPT ID information for the drives, use :command:`zpool status Pool_Name` which will also show you if any drives are failed or in the process of
-being resilvered::
-
- zpool status Vol1
- pool: Vol1
- state: ONLINE
- scan: scrub repaired 0 in 16h24m with 0 errors on Sun Mar 10 17:24:20 2013
- config:
- NAME						STATE	READ WRITE CKSUM
- Vol1						ONLINE  0    0     0
- raidz1-0					ONLINE  0    0     0
- gptid/d5ed48a4-634a-11e2-963c-00e081740bfe	ONLINE  0    0     0
- gptid/03121538-62d9-11e2-99bd-00e081740bfe	ONLINE  0    0     0
- gptid/252754e1-6266-11e2-8088-00e081740bfe	ONLINE  0    0     0
- gptid/9092045a-601d-11e2-892e-00e081740bfe	ONLINE  0    0     0
- gptid/670e35bc-5f9a-11e2-92ca-00e081740bfe	ONLINE  0    0     0
-
- errors: No known data errors
-
-After onlining all of the disks, type :command:`zpool status` to see if the drives start to resilver. If this happens, wait for the resilvering process to
-complete.
-
-Next, export and then import the pool::
-
- zpool export Vol1
-
- zpool import -R /mnt Vol1
-
-Once the import completes, all of the drive space should be available. Verify that the increased size is recognized::
-
- zpool list Vol1
- NAME	SIZE	ALLOC	FREE	CAP	DEDUP	HEALTH	ALTROOT
- Vol1	9.06T	1.41T	7.24T	31%	1.00x	ONLINE	/mnt
-
-If you cannot see the extra space, you may need to run :command:`zpool online -e pool_name device_name` for every device listed in :command:`zpool status`.
-
-.. _Splitting a Mirrored Pool:
-
-Splitting a Mirrored Pool
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-ZFSv provides the ability to to split a **mirrored** storage pool, which detaches a disk or disks in the original ZFS volume in order to create another
-identical ZFS volume on another system.
-
-.. note:: this operation only works on mirrored ZFS volumes.
-
-In this example, a ZFS mirror named :file:`test` contains three drives::
-
- zpool status
-  pool: test
- state: ONLINE
- scan: resilvered 568K in 0h0m with 0 errors on Wed Jul 6 16:10:58 2011
- config:
- NAME		STATE	READ WRITE CKSUM
- test		ONLINE  0    0     0
- mirror-0	ONLINE  0    0     0
- da1		ONLINE  0    0     0
- da0		ONLINE  0    0     0
- da4		ONLINE  0    0     0
-
-The following command splits from the existing three disk mirror :file:`test` a new ZFS volume named :file:`migrant` containing one disk, *da4*. Disks *da0* and
-*da1* remain in :file:`test`::
-
- zpool split test migrant da4
-
-At this point, *da4* can be physically removed and installed to a new system as the new pool is exported as it is created. Once physically installed, import
-the identical pool on the new system::
-
- zpool import migrant
-
-This makes the ZFS volume :file:`migrant` available with a single disk. Be aware that properties come along with the clone, so the new pool will be mounted
-where the old pool was mounted if the mountpoint property was set on the original pool.
-
-Verify the status of the new pool::
-
- zpool status
-  pool: migrant
- state: ONLINE
- scan: resilvered 568K in 0h0m with 0 errors on Wed Jul 6 16:10:58 2011
- config:
- NAME		STATE	READ WRITE CKSUM
- migrant	ONLINE  0    0     0
- da4		ONLINE  0    0     0
-
- errors: No known data errors
-
-On the original system, the status now looks like this::
-
- zpool status
-  pool: test
- state: ONLINE
- scan: resilvered 568K in 0h0m with 0 errors on Wed Jul 6 16:10:58 2011
- config:
-
- NAME		STATE	READ WRITE CKSUM
- test		ONLINE  0    0     0
- mirror-0	ONLINE  0    0     0
- da1		ONLINE  0    0     0
- da0		ONLINE  0    0     0
-
- errors: No known data errors
-
-At this point, it is recommended to add disks to create a full mirror set. This example adds two disks named *da2* and
-*da3*::
-
- zpool attach migrant da4 da2
-
- zpool attach migrant da4 da3
-
-The :file:`migrant` volume now looks like this::
-
- zpool status
-  pool: migrant
- state: ONLINE
- scan: resilvered 572K in 0h0m with 0 errors on Wed Jul 6 16:43:27 2011
- config:
- NAME		STATE	READ WRITE CKSUM
- migrant	ONLINE  0    0     0
- mirror-0	ONLINE  0    0     0
- da4		ONLINE  0    0     0
- da2		ONLINE  0    0     0
- da3		ONLINE  0    0     0
-
-Now that the new system has been cloned, you can detach *da4* and install it back to the original system. Before physically removing the disk, run this
-command on the new system::
-
- zpool detach migrant da4
-
-Once the disk is physically re-installed, run this command on the original system::
-
- zpool attach orig da0 da4
-
-Should you ever need to create a new clone, remember to remove the old clone first::
-
- zpool destroy migrant
-
 .. index:: Periodic Snapshot, Snapshot
 .. _Periodic Snapshot Tasks:
 
@@ -1072,7 +945,7 @@ To create a periodic snapshot task, click :menuselection:`Storage --> Periodic S
 | Weekday        | checkboxes                 | which days of the week to take snapshots                                                                     |
 |                |                            |                                                                                                              |
 +----------------+----------------------------+--------------------------------------------------------------------------------------------------------------+
-| Enabled        | checkbox                   | uncheck to disable the scheduled replication task without deleting it                                        |
+| Enabled        | checkbox                   | uncheck to disable the scheduled snapshot task without deleting it                                           |
 |                |                            |                                                                                                              |
 +----------------+----------------------------+--------------------------------------------------------------------------------------------------------------+
 
@@ -1225,10 +1098,8 @@ Table 8.3a summarizes the available options in the "Add Replication" screen.
 | Dedicated User            | drop-down menu | only available if "Dedicated User Enabled" is checked; select the user account to be used for replication    |
 |                           |                |                                                                                                              |
 +---------------------------+----------------+--------------------------------------------------------------------------------------------------------------+
-| Encryption Cipher         | drop-down menu | choices are *Standard*,                                                                                      |
-|                           |                | *Fast*, or                                                                                                   |
-|                           |                | *Disabled*; temporarily selecting                                                                            |
-|                           |                | *Disabled* can significantly reduce the time for the initial replication                                     |
+| Encryption Cipher         | drop-down menu | choices are *Standard* or                                                                                    |
+|                           |                | *Fast*                                                                                                       |
 |                           |                |                                                                                                              |
 +---------------------------+----------------+--------------------------------------------------------------------------------------------------------------+
 | Remote hostkey            | string         | use the "SSH Key Scan" button to retrieve the public key of *PULL*                                           |
@@ -1239,9 +1110,7 @@ Table 8.3a summarizes the available options in the "Add Replication" screen.
 By default, replication occurs when snapshots occur. For example, if snapshots are scheduled for every 2 hours, replication occurs every 2 hours. The initial
 replication can take a significant period of time, from many hours to possibly days, as the structure of the entire ZFS pool needs to be recreated on the
 remote system. The actual time will depend upon the size of the pool and the speed of the network. Subsequent replications will take far less time, as only
-the modified data will be replicated. If the security policy allows it, temporarily change the "Encryption Cipher" to *Disabled* until the initial replication
-is complete. This will turn off encryption but will speed up the replication. The "Encryption Cipher" can then be changed to *Standard* or
-*Fast* for subsequent replications.
+the modified data will be replicated.
 
 The "Begin" and "End" times can be used to create a window of time where replication occurs. The default times allow replication to occur at any time of the
 day a snapshot occurs. Change these times if snapshot tasks are scheduled during office hours but the replication itself should occur after office hours. For

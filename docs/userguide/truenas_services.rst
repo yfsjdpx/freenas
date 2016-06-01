@@ -147,12 +147,12 @@ each configured CIFS Share. In contrast, global settings which apply to all CIFS
    `master browser election <http://www.samba.org/samba/docs/man/Samba-HOWTO-Collection/NetworkBrowsing.html#id2581357>`_
    to occur and for the TrueNAS® system to become available in Windows Explorer.
 
-:numref:`Figure %s: Global CIFS Configuration <cifs1a>` shows the global CIFS configuration options which are described in Table 11.3a. This configuration screen is really a front-end to
+:numref:`Figure %s: Global CIFS Configuration <tn_cifs1a>` shows the global CIFS configuration options which are described in Table 11.3a. This configuration screen is really a front-end to
 `smb4.conf <http://www.sloop.net/smb.conf.html>`_.
 
-.. _cifs1a:
+.. _tn_cifs1a:
 
-.. figure:: images/cifs1a.png
+.. figure:: images/tn_cifs1a.png
 
 **Table 11.3a: Global CIFS Configuration Options**
 
@@ -160,8 +160,14 @@ each configured CIFS Share. In contrast, global settings which apply to all CIFS
 | **Setting**                      | **Value**      | **Description**                                                                                       |
 |                                  |                |                                                                                                       |
 +==================================+================+=======================================================================================================+
-| NetBIOS Name                     | string         | automatically populated with the system's original hostname; it **must**  be different from the       |
+| NetBIOS Name (This Node)         | string         | automatically populated with the system's original hostname; it **must**  be different from the       |
 |                                  |                | *Workgroup* name                                                                                      |
+|                                  |                |                                                                                                       |
++----------------------------------+----------------+-------------------------------------------------------------------------------------------------------+
+| NetBIOS Name (Node B)            | string         | when using :ref:`Failovers`, set a unique NetBIOS name for the standby node                           |
+|                                  |                |                                                                                                       |
++----------------------------------+----------------+-------------------------------------------------------------------------------------------------------+
+| NetBIOS Alias                    | string         | when using :ref:`Failovers`, this is the NetBIOS name that resolves to either node                    |
 |                                  |                |                                                                                                       |
 +----------------------------------+----------------+-------------------------------------------------------------------------------------------------------+
 | Workgroup                        | string         | must match Windows workgroup name; this setting is ignored if the Active Directory or LDAP service is |
@@ -290,20 +296,18 @@ each configured CIFS Share. In contrast, global settings which apply to all CIFS
 | SMB2_10        | used by Windows 7                                          |
 |                |                                                            |
 +----------------+------------------------------------------------------------+
-| SMB2_22        | used by early Windows 8                                    |
-|                |                                                            |
-+----------------+------------------------------------------------------------+
-| SMB2_24        | used by Windows 8 beta                                     |
-|                |                                                            |
-+----------------+------------------------------------------------------------+
 | SMB3           | used by Windows 8                                          |
 |                |                                                            |
 +----------------+------------------------------------------------------------+
 | SMB3_00        | used by Windows 8, mostly the same as SMB2_24              |
 |                |                                                            |
 +----------------+------------------------------------------------------------+
-
-.. note:: Windows 8.1 and Windows Server 2012 R2 use SMB3.02 which is not yet supported by Samba. 
+| SMB3_02        | used by Windows 8.1 and Windows Server 2012                |
+|                |                                                            |
++----------------+------------------------------------------------------------+
+| SMB3_11        | used by Windows 10                                         |
+|                |                                                            |
++----------------+------------------------------------------------------------+
 
 .. note:: do not set the
    *directory name cache size* as an "Auxiliary parameter". Due to differences in how Linux and BSD handle file descriptors, directory name caching is
@@ -887,6 +891,10 @@ configured NFS Share. In contrast, global settings which apply to all NFS shares
 |                        |            | that group membership has been configured correctly on the NFS server                                               |
 |                        |            |                                                                                                                     |
 +------------------------+------------+---------------------------------------------------------------------------------------------------------------------+
+| Support>16 groups      |            | check this box if any users are members of more than 16 groups (useful in AD environments); note that this assumes  |
+|                        |            | that group membership has been configured correctly on the NFS server                                               |
+|                        |            |                                                                                                                     |
++------------------------+------------+---------------------------------------------------------------------------------------------------------------------+
 
 .. index:: Rsync
 .. _Rsync:
@@ -1141,6 +1149,10 @@ Mode" button or configure the system to always display these settings by checkin
 | **Setting**                   | **Value**      | **Description**                                                                                          |
 |                               |                |                                                                                                          |
 +===============================+================+==========================================================================================================+
+| Bind Interfaces               | selection      | only available in "Advanced Mode"; by default, SSH listens on all interfaces unless you specify which    |
+|                               |                | interfaces by highlighting them in the "Available" field and adding them to the "Selected" field         |
+|                               |                |                                                                                                          |
++-------------------------------+----------------+----------------------------------------------------------------------------------------------------------+
 | TCP Port                      | integer        | port to open for SSH connection requests; *22* by default                                                |
 |                               |                |                                                                                                          |
 +-------------------------------+----------------+----------------------------------------------------------------------------------------------------------+
@@ -1295,7 +1307,7 @@ TrueNAS® uses
 
 .. _ups1:
 
-.. figure:: images/ups.png
+.. figure:: images/ups1.png
 
 Table 11.15a summarizes the options in the UPS Configuration screen.
 
@@ -1322,7 +1334,11 @@ Table 11.15a summarizes the options in the UPS Configuration screen.
 |                           |                |                                                                                                       |
 +---------------------------+----------------+-------------------------------------------------------------------------------------------------------+
 | Auxiliary Parameters      | string         | additional options from                                                                               |
-|                           |                | `ups.conf(5) <http://www.networkupstools.org/docs/man/ups.conf.html>`_                                |
+| (ups.conf)                |                | `ups.conf(5) <http://www.networkupstools.org/docs/man/ups.conf.html>`_                                |
+|                           |                |                                                                                                       |
++---------------------------+----------------+-------------------------------------------------------------------------------------------------------+
+| Auxiliary Parameters      | string         | additional options from                                                                               |
+| (upsd.conf)               |                | `upsd.conf(5) <http://www.networkupstools.org/docs/man/upsd.conf.html>`_                              |
 |                           |                |                                                                                                       |
 +---------------------------+----------------+-------------------------------------------------------------------------------------------------------+
 | Description               | string         | optional                                                                                              |
@@ -1387,7 +1403,7 @@ this command. These users are created in the "Extra users" field.
 WebDAV
 ------
 
-In TrueNAS® 9.3, WebDAV can be configured to provide a file browser over a web connection. Before starting this service, you must create at least
+In TrueNAS®, WebDAV can be configured to provide a file browser over a web connection. Before starting this service, you must create at least
 one WebDAV share using :menuselection:`Sharing --> WebDAV Shares --> Add WebDAV Share`. Refer to :ref:`WebDAV Shares` for instructions on how to create a
 share and then how to connect to it once the service is configured and started.
 

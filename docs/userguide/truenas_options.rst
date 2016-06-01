@@ -138,15 +138,14 @@ Alert
 -----
 
 TrueNAS® provides an alert system to provide a visual warning of any conditions that require administrative attention. The "Alert" button in the far right corner will flash red when there is
-an outstanding alert. In the example alert shown in :numref:`Figure %s: Example Alert Message <alert1>`. one of the disks in a ZFS pool is offline which has degraded the state of the pool.
+an outstanding alert. In the example alert shown in :numref:`Figure %s: Example Alert Message <alert2a>`, the system is warning that the S.M.A.R.T. service is not running.
 
-.. _alert1:
+.. _alert2a:
 
-.. figure:: images/alert1.png
+.. figure:: images/alert2a.png
 
-Informational messages will have a green "OK" while messages requiring attention will be listed as a red "CRITICAL". CRITICAL messages will also be emailed to
-the root user account. If you are aware of a critical condition but wish to remove the flashing alert until you deal with it, uncheck the box next to that
-message.
+Informational messages will have a green "OK", warning messages will flash yellow, and messages requiring attention will be listed as a red "CRITICAL". CRITICAL messages will also be emailed
+to the root user account. If you are aware of a critical condition but wish to remove the flashing alert until you deal with it, uncheck the box next to that message.
 
 Behind the scenes, an alert daemon checks for various alert conditions, such as volume and disk status, and writes the current conditions to
 :file:`/var/tmp/alert`. The daemon retrieves the current alert status every minute and will change the solid green alert icon to flashing red if a new alert
@@ -160,21 +159,31 @@ is detected. Some of the conditions that trigger an alert include:
 
 * ZFS pool status changes from "HEALTHY"
 
+* the system dataset does not reside on the boot pool
+
 * a S.M.A.R.T. error occurs
 
 * the system is unable to bind to the "WebGUI IPv4 Address" set in :menuselection:`System --> General`
 
 * the system can not find an IP address configured on an iSCSI portal
 
-* a replication task fails
+* the interface which is set to be critical for failover is not found or is not configured
+
+* a periodic snapshot or replication task fails
 
 * a VMware login or a :ref:`VMware-Snapshot` task fails
+
+* a delete of a VMware snapshot fails
 
 * a Certificate Authority or certificate is invalid or malformed
 
 * HA is configured but the connection is not established
 
+* one node of an HA pair gets stuck applying its configuration journal as this condition could block future configuration changes from being applied to the standby node
+
 * 30 days before the license expires and when the license expires
+
+* a re-key operation fails on an encrypted pool
 
 * the status of an Avago MegaRAID SAS controller has changed;
   `mfiutil(8) <http://www.freebsd.org/cgi/man.cgi?query=mfiutil>`_
@@ -182,11 +191,14 @@ is detected. Some of the conditions that trigger an alert include:
   
 * the usage of a HA link goes above 10MB/s
 
+.. note:: alerts which may be related to a hardware issue will automatically create a support ticket. These include a ZFS pool status change, a multipath failure, a failed S.M.A.R.T.
+   test, and a failed re-key operation.
+
 An alert will also be generated when the Avago HBA firmware version does not match the driver version. To resolve this alert, download the IT (integrated
 target) firmware, not the IR (integrated RAID) firmware, from the Avago website. Then, specify the name of the firmware image and bios as well as the
 controller to flash::
 
- sas2flash -f firmwareimagename -b biosname -c controllernumber
+ sas2flash -o -f firmwareimagename -b biosname -c controllernumber
 
 When finished, reboot the system. The new firmware version should appear in the system messages and the alert will be cleared.
 

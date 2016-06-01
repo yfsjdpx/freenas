@@ -121,7 +121,8 @@ display these settings by checking the box "Show advanced fields by default" in 
 | Site Name                | string        | only available in "Advanced Mode"; the relative distinguished name of the site object in Active Directory                                  |
 |                          |               |                                                                                                                                            |
 +--------------------------+---------------+--------------------------------------------------------------------------------------------------------------------------------------------+
-| Domain Controller        | string        | only available in "Advanced Mode"; if the hostname of the domain controller to use is specified, make sure it is resolvable                |
+| Domain Controller        | string        | only available in "Advanced Mode"; will automatically be added to the SRV record for the domain and, when multiple controllers are         |
+|                          |               | specified, TrueNAS will select the closest DC which responds                                                                               |
 |                          |               |                                                                                                                                            |
 +--------------------------+---------------+--------------------------------------------------------------------------------------------------------------------------------------------+
 | Global Catalog Server    | string        | only available in "Advanced Mode"; if the hostname of the global catalog server to use is specified, make sure it is resolvable            |
@@ -130,10 +131,10 @@ display these settings by checking the box "Show advanced fields by default" in 
 | Kerberos Realm           | drop-down     | only available in "Advanced Mode";  select the realm created using the instructions in :ref:`Kerberos Realms`                              |
 |                          | menu          |                                                                                                                                            |
 +--------------------------+---------------+--------------------------------------------------------------------------------------------------------------------------------------------+
-| Kerberos keytab          | drop-down     | only available in "Advanced Mode"; browse to the location of the keytab created using the instructions in :ref:`Kerberos Keytabs`          |
+| Kerberos Principal       | drop-down     | only available in "Advanced Mode"; browse to the location of the keytab created using the instructions in :ref:`Kerberos Keytabs`          |
 |                          | menu          |                                                                                                                                            |
 +--------------------------+---------------+--------------------------------------------------------------------------------------------------------------------------------------------+
-|AD timeout                | integer       | only available in "Advanced Mode"; in seconds, increase if the AD service does not start after connecting to the                           |
+| AD timeout               | integer       | only available in "Advanced Mode"; in seconds, increase if the AD service does not start after connecting to the                           |
 |                          |               | domain                                                                                                                                     |
 |                          |               |                                                                                                                                            |
 +--------------------------+---------------+--------------------------------------------------------------------------------------------------------------------------------------------+
@@ -155,6 +156,16 @@ display these settings by checking the box "Show advanced fields by default" in 
 |                          |               |                                                                                                                                            |
 +--------------------------+---------------+--------------------------------------------------------------------------------------------------------------------------------------------+
 | Enable                   | checkbox      | uncheck to disable the configuration without deleting it                                                                                   |
+|                          |               |                                                                                                                                            |
++--------------------------+---------------+--------------------------------------------------------------------------------------------------------------------------------------------+
+| NetBIOS Name (This Node) | string        | only available in "Advanced Mode"; automatically populated with the system's original hostname; it **must**  be different from the         |
+|                          |               | *Workgroup* name                                                                                                                           |
+|                          |               |                                                                                                                                            |
++--------------------------+---------------+--------------------------------------------------------------------------------------------------------------------------------------------+
+| NetBIOS Name (Node B)    | string        | only available in "Advanced Mode"; when using :ref:`Failovers`, set a unique NetBIOS name for the standby node                             |
+|                          |               |                                                                                                                                            |
++--------------------------+---------------+--------------------------------------------------------------------------------------------------------------------------------------------+
+| NetBIOS Alias            | string        | only available in "Advanced Mode"; when using :ref:`Failovers`, this is the NetBIOS name that resolves to either node                      |
 |                          |               |                                                                                                                                            |
 +--------------------------+---------------+--------------------------------------------------------------------------------------------------------------------------------------------+
 
@@ -433,6 +444,17 @@ If you are new to LDAP terminology, skim through the
 | Enable                  | checkbox       | uncheck to disable the configuration without deleting it                                                       |
 |                         |                |                                                                                                                |
 +-------------------------+----------------+----------------------------------------------------------------------------------------------------------------+
+| NetBIOS Name            | string         | only available in "Advanced Mode"; automatically populated with the system's original hostname; it **must**    |
+| (This Node)             |                | be different from the *Workgroup* name                                                                         |
+|                         |                |                                                                                                                |
++-------------------------+----------------+----------------------------------------------------------------------------------------------------------------+
+| NetBIOS Name (Node B)   | string         | only available in "Advanced Mode"; when using :ref:`Failovers`, set a unique NetBIOS name for the standby node |
+|                         |                |                                                                                                                |
++-------------------------+----------------+----------------------------------------------------------------------------------------------------------------+
+| NetBIOS Alias           | string         | only available in "Advanced Mode"; when using :ref:`Failovers`, this is the NetBIOS name that resolves to      |
+|                         |                | either node                                                                                                    |
+|                         |                |                                                                                                                |
++-------------------------+----------------+----------------------------------------------------------------------------------------------------------------+
 
 Click the "Rebuild Directory Service Cache" button if you add a user to LDAP who needs immediate access to TrueNAS®; otherwise this occurs automatically once
 a day as a cron job.
@@ -514,37 +536,37 @@ these settings by checking the box "Show advanced fields by default" in :menusel
 
 **Table 9.4a: NT4 Configuration Options**
 
-+------------------------+-----------+--------------------------------------------------------------------------------------------------+
-| **Setting**            | **Value** | **Description**                                                                                  |
-|                        |           |                                                                                                  |
-|                        |           |                                                                                                  |
-+========================+===========+==================================================================================================+
-| Domain Controller      | string    | hostname of domain controller                                                                    |
-|                        |           |                                                                                                  |
-+------------------------+-----------+--------------------------------------------------------------------------------------------------+
-| NetBIOS Name           | string    | hostname of TrueNAS system; cannot be greater than 15 characters                                 |
-|                        |           |                                                                                                  |
-+------------------------+-----------+--------------------------------------------------------------------------------------------------+
-| Workgroup Name         | string    | name of Windows server's workgroup                                                               |
-|                        |           |                                                                                                  |
-+------------------------+-----------+--------------------------------------------------------------------------------------------------+
-| Administrator Name     | string    | name of the domain administrator account                                                         |
-|                        |           |                                                                                                  |
-+------------------------+-----------+--------------------------------------------------------------------------------------------------+
-| Administrator Password | string    | input and confirm the password for the domain administrator account                              |
-|                        |           |                                                                                                  |
-+------------------------+-----------+--------------------------------------------------------------------------------------------------+
-| Use default domain     | checkbox  | only available in "Advanced Mode"; when unchecked, the domain name is prepended to the username  |
-|                        |           |                                                                                                  |
-+------------------------+-----------+--------------------------------------------------------------------------------------------------+
-| Idmap backend          | drop-down | only available in "Advanced Mode"; select the backend to use to map Windows security identifiers |
-|                        | and Edit  | (SIDs) to UNIX UIDs and GIDs; see Table 9.1b for a summary of the available backends; click the  |
-|                        | menu      | "Edit" link to configure that backend's editable options                                         |
-|                        |           |                                                                                                  |
-+------------------------+-----------+--------------------------------------------------------------------------------------------------+
-| Enable                 | checkbox  | uncheck to disable the configuration without deleting it                                         |
-|                        |           |                                                                                                  |
-+------------------------+-----------+--------------------------------------------------------------------------------------------------+
++------------------------+-----------+------------------------------------------------------------------------------------------------------+
+| **Setting**            | **Value** | **Description**                                                                                      |
+|                        |           |                                                                                                      |
+|                        |           |                                                                                                      |
++========================+===========+======================================================================================================+
+| Domain Controller      | string    | hostname of domain controller                                                                        |
+|                        |           |                                                                                                      |
++------------------------+-----------+------------------------------------------------------------------------------------------------------+
+| NetBIOS Name           | string    | hostname of TrueNAS system; cannot be greater than 15 characters or the same as the "Workgroup Name" |
+|                        |           |                                                                                                      |
++------------------------+-----------+------------------------------------------------------------------------------------------------------+
+| Workgroup Name         | string    | name of Windows server's workgroup                                                                   |
+|                        |           |                                                                                                      |
++------------------------+-----------+------------------------------------------------------------------------------------------------------+
+| Administrator Name     | string    | name of the domain administrator account                                                             |
+|                        |           |                                                                                                      |
++------------------------+-----------+------------------------------------------------------------------------------------------------------+
+| Administrator Password | string    | input and confirm the password for the domain administrator account                                  |
+|                        |           |                                                                                                      |
++------------------------+-----------+------------------------------------------------------------------------------------------------------+
+| Use default domain     | checkbox  | only available in "Advanced Mode"; when unchecked, the domain name is prepended to the username      |
+|                        |           |                                                                                                      |
++------------------------+-----------+------------------------------------------------------------------------------------------------------+
+| Idmap backend          | drop-down | only available in "Advanced Mode"; select the backend to use to map Windows security identifiers     |
+|                        | and Edit  | (SIDs) to UNIX UIDs and GIDs; see Table 9.1b for a summary of the available backends; click the      |
+|                        | menu      | "Edit" link to configure that backend's editable options                                             |
+|                        |           |                                                                                                      |
++------------------------+-----------+------------------------------------------------------------------------------------------------------+
+| Enable                 | checkbox  | uncheck to disable the configuration without deleting it                                             |
+|                        |           |                                                                                                      |
++------------------------+-----------+------------------------------------------------------------------------------------------------------+
 
 Click the "Rebuild Directory Service Cache" button if you add a user to Active Directory who needs immediate access to TrueNAS®; otherwise this occurs
 automatically once a day as a cron job.

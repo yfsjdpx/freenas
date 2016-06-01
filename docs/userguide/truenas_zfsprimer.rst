@@ -6,7 +6,7 @@ ZFS Primer
 ZFS is an advanced, modern filesystem that was specifically designed to provide features not available in traditional UNIX filesystems. It was originally
 developed at Sun with the intent to open source the filesystem so that it could be ported to other operating systems. After the Oracle acquisition of Sun,
 some of the original ZFS engineers founded
-`OpenZFS <http://open-zfs.org/wiki/Main_Page>`_ in order to provided continued, collaborative development of the open source version. To differentiate itself from Oracle ZFS
+`OpenZFS <http://open-zfs.org/wiki/Main_Page>`_ in order to provide continued, collaborative development of the open source version. To differentiate itself from Oracle ZFS
 version numbers, OpenZFS uses feature flags. Feature flags are used to tag features with unique names in order to provide portability between OpenZFS
 implementations running on different platforms, as long as all of the feature flags enabled on the ZFS pool are supported by both platforms. TrueNAS® uses
 OpenZFS and each new version of TrueNAS® keeps up-to-date with the latest feature flags and OpenZFS bug fixes.
@@ -53,7 +53,7 @@ minutes of the data loss). Snapshots are stored locally but can also be replicat
 copy but instead converts a snapshot into a stream of data. This design means that the ZFS pool on the receiving end does not need to be identical and can use
 a different RAIDZ level, volume size, compression settings, etc.
   
-**ZFS boot environments provide a method for recovering from a failed upgrade**. in TrueNAS® 9.3, a snapshot of the dataset the operating system resides on
+**ZFS boot environments provide a method for recovering from a failed upgrade**. In TrueNAS®, a snapshot of the dataset the operating system resides on
 is automatically taken before an upgrade or a system update. This saved boot environment is automatically added to the GRUB boot loader. Should the upgrade or
 configuration change fail, simply reboot and select the previous boot environment from the boot menu. Users can also create their own boot environments in
 :menuselection:`System --> Boot` as needed, for example before making configuration changes. This way, the system can be rebooted into a snapshot of the

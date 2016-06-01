@@ -27,8 +27,6 @@ is a daemon that runs a command or script on a regular schedule as a specified u
 `crontab(5) <http://www.freebsd.org/cgi/man.cgi?query=crontab&sektion=5>`_
 using syntax that can be perplexing to new Unix users. The TrueNAS® GUI makes it easy to schedule when you would like the task to occur.
 
-.. note:: due to a limitation in FreeBSD, users with account names that contain spaces or exceed 17 characters are unable to create cron jobs.
-
 :numref:`Figure %s: Creating a Cron Job <cron1>` shows the screen that opens when you click :menuselection:`Tasks --> Cron Jobs --> Add Cron Job`.
 
 .. _cron1:
@@ -267,7 +265,9 @@ that can be configured when creating an rsync task.
 |                                  |                             | escaped between single quotes (e.g. '\*.txt')                                             |
 |                                  |                             |                                                                                           |
 +----------------------------------+-----------------------------+-------------------------------------------------------------------------------------------+
-| Enabled                          | checkbox                    | uncheck if you would like to disable the rsync task without deleting it                   |
+| Enabled                          | checkbox                    | uncheck if you would like to disable the rsync task without deleting it; note that when   |
+|                                  |                             | the :ref:`Rsync` service is OFF, the rsync task will continue to look for the server      |
+|                                  |                             | unless this checkbox is unchecked                                                         |
 |                                  |                             |                                                                                           |
 +----------------------------------+-----------------------------+-------------------------------------------------------------------------------------------+
 
@@ -340,8 +340,8 @@ configured before creating the rsync task:
 
 * the SSH service must be running on *PULL*
 
-To create the public/private key pair for the rsync user account, open Shell on *PUSH*. The following example generates an RSA type public/private key pair
-for the *root* user. When creating the key pair, do not enter the passphrase as the key is meant to be used for an automated task.::
+To create the public/private key pair for the rsync user account, open :ref:`Shell` on *PUSH* and run :command:`ssh-keygen`. The following example generates an RSA type public/private key
+pair for the *root* user. When creating the key pair, do not enter the passphrase as the key is meant to be used for an automated task.::
 
  ssh-keygen -t rsa
  Generating public/private rsa key pair.

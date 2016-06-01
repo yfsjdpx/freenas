@@ -691,7 +691,7 @@ function of that option. `smb.conf(5) <http://www.sloop.net/smb.conf.html>`_ pro
 |                              |               | for all connections                                                                                         |
 |                              |               |                                                                                                             |
 +------------------------------+---------------+-------------------------------------------------------------------------------------------------------------+
-| Hosts Allow                  | string        | only available in "Advanced Mode"; comma, space, or tab delimited list of allowed hostnames or IP addresses;|
+| Hosts Allow                  | string        | only available in "Advanced Mode"; comma, space, or tab delimited list of allowed hostnames or IP addresses |
 |                              |               |                                                                                                             |
 +------------------------------+---------------+-------------------------------------------------------------------------------------------------------------+
 | Hosts Deny                   | string        | only available in "Advanced Mode"; comma, space, or tab delimited list of denied hostnames or IP addresses; |
@@ -723,7 +723,7 @@ Note the following regarding some of the "Advanced Mode" settings:
   Unchecking this option provides limited security and is not a substitute for proper permissions and password control.
 
 * If you wish some files on a shared volume to be hidden and inaccessible to users, put a *veto files=* line in the "Auxiliary Parameters" field. The syntax for
-  the "veto files" option and some examples can be found `here <http://www.sloop.net/smb.conf.html>`__.
+  the "veto files" option and some examples can be found `here <http://www.sloop.net/smb.conf.html>`_.
   
 To configure support for OS/2 clients, add this line to "Auxiliary Parameters"::
 
@@ -800,6 +800,9 @@ for more details.
 | fake_perms          | allows roaming profile files and directories to be set as read-only                                                                        |
 |                     |                                                                                                                                            |
 +---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
+| fruit               | enhances OS X support by providing the SMB2 AAPL extension and Netatalk interoperability (see NOTE below table)                            |
+|                     |                                                                                                                                            |
++---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
 | full_audit          | records selected client operations to the system log                                                                                       |
 |                     |                                                                                                                                            |
 +---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
@@ -810,9 +813,6 @@ for more details.
 |                     |                                                                                                                                            |
 +---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
 | netatalk            | eases the co-existence of CIFS and AFP shares                                                                                              |
-|                     |                                                                                                                                            |
-+---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
-| notify_fam          | implements file change notifications from IRIX and some BSD systems to Windows clients                                                     |
 |                     |                                                                                                                                            |
 +---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
 | posix_eadb          | provides Extended Attributes (EAs) support so they can be used on filesystems which do not provide native support for EAs                  |
@@ -827,19 +827,17 @@ for more details.
 | readonly            | marks a share as read-only for all clients connecting within the configured time period                                                    |
 |                     |                                                                                                                                            |
 +---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
-| recycle             | moves deleted files to the recycle directory instead of deleting them                                                                      |
-|                     |                                                                                                                                            |
-+---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
 | scannedonly         | ensures that only files that have been scanned for viruses are visible and accessible                                                      |
 |                     |                                                                                                                                            |
 +---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
 | shadow_copy         | allows Microsoft shadow copy clients to browse shadow copies on Windows shares                                                             |
 |                     |                                                                                                                                            |
 +---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
-| shadow_copy2        | a more recent implementation of "shadow_copy" with some additonal features                                                                 |
+| shadow_copy_test    | shadow copy testing                                                                                                                        |
 |                     |                                                                                                                                            |
 +---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
-| shadow_copy_test    | shadow copy testing                                                                                                                        |
+| shell_snap          | provides shell-script callouts for snapshot creation and deletion operations issued by remote clients using the File Server Remote VSS     |
+|                     | Protocol (FSRVP)                                                                                                                           |
 |                     |                                                                                                                                            |
 +---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
 | skel_opaque         | implements dummy versions of all VFS modules (useful to VFS module developers)                                                             |
@@ -849,6 +847,9 @@ for more details.
 |                     |                                                                                                                                            |
 +---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
 | smb_traffic_analyzer| logs Samba read and write operations through a socket to a helper application                                                              |
+|                     |                                                                                                                                            |
++---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
+| snapper             | provides the ability for remote SMB clients to access shadow copies of FSRVP snapshots using Windows Explorer                              |
 |                     |                                                                                                                                            |
 +---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
 | streams_depot       | **experimental** module to store alternate data streams in a central directory                                                             |
@@ -863,12 +864,27 @@ for more details.
 | time_audit          | logs system calls that take longer than the number of defined milliseconds                                                                 |
 |                     |                                                                                                                                            |
 +---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
+| unityed_media       | allows multiple Avid clients to share a network drive                                                                                      |
+|                     |                                                                                                                                            |
++---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
+| worm                | controls the writability of files and folders depending on their change time and an adjustable grace period                                |  
+|                     |                                                                                                                                            |
++---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
 | xattr_tdb           | stores Extended Attributes (EAs) in a tdb file so they can be used on filesystems which do not provide support for EAs                     |
 |                     |                                                                                                                                            |
 +---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
-| zfs_space           | correctly calculates ZFS space used by share, including any reservations or quotas                                                         |
-|                     |                                                                                                                                            |
-+---------------------+--------------------------------------------------------------------------------------------------------------------------------------------+
+
+.. note:: when using "fruit", also add the "streams_xattr" and "catia" VFS objects and be sure to configure **all** CIFS shares this way.  
+
+The following VFS objects do not appear in the drop-down menu as they are always enabled:
+
+* **recycle:** moves deleted files to the recycle directory instead of deleting them 
+
+* **shadow_copy2:** a more recent implementation of "shadow_copy" with some additonal features 
+
+* **zfs_space:** correctly calculates ZFS space used by share, including any reservations or quotas
+
+* **zfsacl:**
 
 
 .. _Configuring Unauthenticated Access:
@@ -1139,12 +1155,12 @@ The rest of this section describes these steps in more detail.
 Target Global Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:menuselection:`Sharing --> Block (iSCSI) --> Target Global Configuration`, shown in :numref:`Figure %s:  iSCSI Target Global Configuration Variables <global1a>`, contains settings that
+:menuselection:`Sharing --> Block (iSCSI) --> Target Global Configuration`, shown in :numref:`Figure %s:  iSCSI Target Global Configuration Variables <global1b>`, contains settings that
 apply to all iSCSI shares. Table 10.5a summarizes the settings that can be configured in the Target Global Configuration screen.
 
-.. _global1a:
+.. _global1b:
 
-.. figure:: images/global1a.png
+.. figure:: images/global1b.png
 
 **Table 10.5a: Target Global Configuration Settings**
 
@@ -1495,7 +1511,8 @@ Table 10.5g summarizes the settings that can be configured when associating targ
 | Target      | drop-down menu | select the pre-created target                                                                          |
 |             |                |                                                                                                        |
 +-------------+----------------+--------------------------------------------------------------------------------------------------------+
-| LUN ID      | drop-down menu | specify the ID of the LUN; the default of *Auto* will select the next available LUN ID, starting at 0  |
+| LUN ID      | drop-down menu | the default of *Auto* will use the next available LUN ID; alternately, select the value of the ID or   |
+|             |                | type in the desired value                                                                              |
 |             |                |                                                                                                        |
 +-------------+----------------+--------------------------------------------------------------------------------------------------------+
 | Extent      | drop-down menu | select the pre-created extent                                                                          |
@@ -1592,8 +1609,8 @@ Connecting to iSCSI
 In order to access the iSCSI target, clients will need to use iSCSI initiator software.
 
 An iSCSI Initiator client is pre-installed with Windows 7. A detailed how-to for this client can be found
-`here <http://www.windowsnetworking.com/articles-tutorials/windows-7/Connecting-Windows-7-iSCSI-SAN.html>`__. A client for Windows 2000, XP, and 2003 can be found
-`here <http://www.microsoft.com/en-us/download/details.aspx?id=18986>`__. This `how-to <http://blog.pluralsight.com/freenas-8-iscsi-target-windows-7>`__
+`here <http://www.windowsnetworking.com/articles-tutorials/windows-7/Connecting-Windows-7-iSCSI-SAN.html>`_. A client for Windows 2000, XP, and 2003 can be found
+`here <http://www.microsoft.com/en-us/download/details.aspx?id=18986>`_. This `how-to <http://blog.pluralsight.com/freenas-8-iscsi-target-windows-7>`_
 shows how to create an iSCSI target for a Windows 7 system.
 
 Mac OS X does not include an initiator. `globalSAN <http://www.studionetworksolutions.com/globalsan-iscsi-initiator/>`_
@@ -1647,6 +1664,8 @@ the example shown in :numref:`Figure %s: Editing an Existing Zvol <tn_grow>`, th
 
 Input the new size for the zvol in the "Size" field and click the "Edit ZFS Volume" button. This menu will close and the new size for the zvol will
 immediately show in the "Used" column of the "View Volumes" screen.
+
+.. note:: the GUI will not let you reduce (shrink) the size of the zvol as doing so could result in loss of data.
 
 .. _File Extent Based LUN:
 
