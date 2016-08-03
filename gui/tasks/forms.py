@@ -283,6 +283,185 @@ class RsyncForm(ModelForm):
         notifier().restart("cron")
 
 
+class ResticForm(ModelForm):
+
+    restic_validate_rpath = forms.BooleanField(
+        initial=True,
+        label=_("Validate Remote Path"),
+        required=False,
+        help_text=_(
+            "This ensures Remote Path Validation."
+            " Uncheck this if the remote machine"
+            " is currently offline or beyond network reach."
+            " And/Or you do not want validation to be done."
+        ),
+    )
+
+    class Meta:
+
+        fields = [
+            'restic_path',
+            'restic_user',
+            'restic_remotehost',
+            'restic_remoteport',
+            'restic_mode',
+            'restic_remotemodule',
+            'restic_remotepath',
+            'restic_validate_rpath',
+            'restic_direction',
+            'restic_desc',
+            'restic_minute',
+            'restic_hour',
+            'restic_daymonth',
+            'restic_month',
+            'restic_dayweek',
+            'restic_recursive',
+            'restic_times',
+            'restic_compress',
+            'restic_archive',
+            'restic_delete',
+            'restic_quiet',
+            'restic_preserveperm',
+            'restic_preserveattr',
+            'restic_delayupdates',
+            'restic_extra',
+            'restic_enabled'
+        ]
+        model = models.Restic
+        widgets = {
+            'restic_minute': CronMultiple(
+                attrs={'numChoices': 60, 'label': _("minute")}
+            ),
+            'restic_hour': CronMultiple(
+                attrs={'numChoices': 24, 'label': _("hour")}
+            ),
+            'restic_daymonth': CronMultiple(
+                attrs={
+                    'numChoices': 31, 'start': 1, 'label': _("day of month"),
+                }
+            ),
+            'restic_dayweek': forms.CheckboxSelectMultiple(
+                choices=choices.WEEKDAYS_CHOICES
+            ),
+            'restic_month': forms.CheckboxSelectMultiple(
+                choices=choices.MONTHS_CHOICES
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(ResticForm, self).__init__(*args, **kwargs)
+        mchoicefield(self, 'restic_month', [
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+        ])
+        mchoicefield(self, 'restic_dayweek', [
+            1, 2, 3, 4, 5, 6, 7
+        ])
+        self.fields['restic_mode'].widget.attrs['onChange'] = (
+            "resticModeToggle();"
+        )
+
+    def check_rpath_exists(self):
+        """A function to check if the rsync_remotepath,
+        exists or not. Returns TRUE rpath is a directory
+        and exists, else FALSE"""
+
+        ruser = self.cleaned_data.get("restic_user").encode('utf8')
+        rhost = str(self.cleaned_data.get("restic_remotehost"))
+        if '@' in rhost:
+            remote = rhost
+        else:
+            remote = '"%s"@%s' % (
+                ruser,
+                rhost,
+            )
+        rport = str(self.cleaned_data.get("restic_remoteport"))
+        rpath = self.cleaned_data.get("restic_remotepath").encode('utf8')
+        proc = subprocess.Popen(
+            """su -m "%s" -c 'ssh -p %s -o "BatchMode yes" -o """
+            """"ConnectTimeout=5" %s test -d \\""%s"\\"' """
+            % (ruser, rport, remote, rpath), shell=True)
+        proc.wait()
+        return proc.returncode == 0
+
+    def clean_restic_user(self):
+        user = self.cleaned_data.get("restic_user")
+        # Windows users can have spaces in their usernames
+        # http://www.freebsd.org/cgi/query-pr.cgi?pr=164808
+        if ' ' in user:
+            raise forms.ValidationError(_("Usernames cannot have spaces"))
+        return user
+
+    def clean_restic_remotemodule(self):
+        mode = self.cleaned_data.get("restic_mode")
+        val = self.cleaned_data.get("restic_remotemodule")
+        if mode == 'module' and not val:
+            raise forms.ValidationError(_("This field is required"))
+        return val
+
+    def clean_restic_remotepath(self):
+        mode = self.cleaned_data.get("restic_mode")
+        val = self.cleaned_data.get("restic_remotepath")
+        if mode == 'ssh' and not val:
+            raise forms.ValidationError(_("This field is required"))
+        return val
+
+    def clean_restic_month(self):
+        m = self.data.getlist("restic_month")
+        if len(m) == 12:
+            return '*'
+        m = ",".join(m)
+        return m
+
+    def clean_restic_dayweek(self):
+        w = self.data.getlist("restic_dayweek")
+        if len(w) == 7:
+            return '*'
+        w = ",".join(w)
+        return w
+
+    def clean_restic_extra(self):
+        extra = self.cleaned_data.get("restic_extra")
+        if extra:
+            extra = extra.replace('\n', ' ')
+        return extra
+
+    def clean(self):
+        cdata = self.cleaned_data
+        mode = cdata.get("restic_mode")
+        user = cdata.get("restic_user")
+        if mode == 'ssh':
+            try:
+                home = pwd.getpwnam(user).pw_dir
+                search = os.path.join(home, ".ssh", "id_[edr]*.*")
+                if not glob.glob(search):
+                    raise ValueError
+            except (KeyError, ValueError, AttributeError, TypeError):
+                self._errors['rsync_user'] = self.error_class([
+                    _("In order to use restic over SSH you need a user<br />"
+                      "with a public key (DSA/ECDSA/RSA) set up in home dir."),
+                ])
+                cdata.pop('restic_user', None)
+        if 'restic_user' in cdata and not (
+            self.cleaned_data.get("restic_mode") == 'module' or
+            not self.cleaned_data.get("restic_validate_rpath") or
+            self.check_rpath_exists()
+        ):
+            self._errors["restic_remotepath"] = self.error_class([_(
+                "The Remote Path you specified does not exist or is not a "
+                "directory.<br>Either create one yourself on the remote "
+                "machine or uncheck the<br>'rsync_validate_rpath' field."
+                "<br>**Note**: This could also happen if the remote path "
+                "entered<br> exceeded 255 characters and was truncated, please"
+                " restrict it to<br>255. Or it could also be that your SSH "
+                "credentials (remote host,etc) are wrong."
+            )])
+        return cdata
+
+    def save(self):
+        super(ResticForm, self).save()
+        notifier().restart("cron")
+
+
 class SMARTTestForm(ModelForm):
 
     class Meta:
