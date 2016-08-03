@@ -64,3 +64,14 @@ def rsync_run(request, oid):
     return render(request, 'tasks/rsync_run.html', {
         'rsync': rsync,
     })
+
+
+def restic_run(request, oid):
+    restic = models.Restic.objects.get(pk=oid)
+    if request.method == "POST":
+        restic.run()
+        return JsonResp(request, message=_("The restic process has started"))
+
+    return render(request, 'tasks/restic_run.html', {
+        'restic': restic,
+    })
