@@ -1612,6 +1612,40 @@ class RsyncResourceMixin(NestedMixin):
         return bundle
 
 
+class ResticResourceMixin(NestedMixin):
+
+    def prepend_urls(self):
+        return [
+            url(
+                r"^(?P<resource_name>%s)/(?P<pk>\w[\w/-]*)/run%s$" % (
+                    self._meta.resource_name, trailing_slash()
+                ),
+                self.wrap_view('run')
+            ),
+        ]
+
+    def run(self, request, **kwargs):
+        self.method_check(request, allowed=['post'])
+
+        bundle, obj = self._get_parent(request, kwargs)
+        obj.run()
+        return HttpResponse('Restic job started.', status=202)
+
+    def dehydrate(self, bundle):
+        bundle = super(ResticResourceMixin, self).dehydrate(bundle)
+        if self.is_webclient(bundle.request):
+            _common_human_fields(bundle)
+            bundle.data['_run_url'] = reverse('restic_run', kwargs={
+                'oid': bundle.obj.id
+            })
+            if bundle.obj.restic_mode == 'module':
+                bundle.data['restic_remoteport'] = '-'
+                bundle.data['restic_remotepath'] = '-'
+            else:
+                bundle.data['restic_remotemodule'] = '-'
+        return bundle
+
+
 class SMARTTestResourceMixin(object):
 
     def dehydrate(self, bundle):
