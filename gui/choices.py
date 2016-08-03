@@ -703,6 +703,15 @@ RSYNC_DIRECTION = (
     ('pull', _('Pull')),
 )
 
+RESTIC_MODE_CHOICES = (
+    ('module', _('Restic module')),
+    ('ssh', _('Restic over SSH')),
+)
+
+RESTIC_DIRECTION = (
+    ('push', _('Push')),
+    ('pull', _('Pull')),
+)
 
 class KBDMAP_CHOICES(object):
     """Populate choices from /usr/share/syscons/keymaps/INDEX.keymaps"""
