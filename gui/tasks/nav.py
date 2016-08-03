@@ -27,6 +27,11 @@ class RsyncView(TreeNode):
     type = 'opentasks'
     append_to = 'tasks.Rsync'
 
+lass ResticView(TreeNode):
+
+    gname = 'View'
+    type = 'opentasks'
+    append_to = 'tasks.Restic'
 
 class SMARTTestView(TreeNode):
 
