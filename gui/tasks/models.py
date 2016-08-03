@@ -554,6 +554,312 @@ class Rsync(Model):
             pass
 
 
+class Restic(Model):
+    restic_path = PathField(
+        verbose_name=_("Path"),
+        abspath=False,
+    )
+    restic_remotehost = models.CharField(
+        max_length=120,
+        verbose_name=_("Remote Host"),
+        help_text=_("IP Address or hostname. "
+                    "Specify user@hostname or user@ip-address "
+                    "if your remote machine user and above rsync "
+                    "task user are different."
+                    ),
+    )
+    restic_remoteport = models.SmallIntegerField(
+        default=22,
+        verbose_name=_("Remote SSH Port"),
+        help_text=_("SSH Port"),
+        validators=[MinValueValidator(1), MaxValueValidator(65535)],
+    )
+    restic_mode = models.CharField(
+        max_length=20,
+        choices=choices.RESTIC_MODE_CHOICES,
+        default='module',
+    )
+    restic_remotemodule = models.CharField(
+        max_length=120,
+        verbose_name=_("Remote Module Name"),
+        blank=True,
+        help_text=_("Name of the module defined in the remote rsync daemon"),
+    )
+    restic_remotepath = models.CharField(
+        max_length=255,
+        verbose_name=_("Remote Path"),
+        blank=True,
+        help_text=_("Path on remote host to rsync to, e.g. /mnt/tank"),
+    )
+    restic_direction = models.CharField(
+        max_length=10,
+        verbose_name=_("Direction"),
+        help_text=_(
+            "Push - From local to remote machine. Pull - From "
+            "remote to local machine."
+        ),
+        default='push',
+        choices=choices.RESTIC_DIRECTION,
+    )
+    restic_desc = models.CharField(
+        max_length=120,
+        verbose_name=_("Short description"),
+        blank=True,
+    )
+    restic_minute = models.CharField(
+        max_length=100,
+        default="00",
+        verbose_name=_("Minute"),
+        help_text=_(
+            "Values allowed:"
+            "<br>Slider: 0-30 (as it is every Nth minute)."
+            "<br>Specific Minute: 0-59."),
+    )
+    restic_hour = models.CharField(
+        max_length=100,
+        default="*",
+        verbose_name=_("Hour"),
+        help_text=_("Values allowed:"
+                    "<br>Slider: 0-12 (as it is every Nth hour)."
+                    "<br>Specific Hour: 0-23."),
+    )
+    restic_daymonth = models.CharField(
+        max_length=100,
+        default="*",
+        verbose_name=_("Day of month"),
+        help_text=_("Values allowed:"
+                    "<br>Slider: 0-15 (as its is every Nth day)."
+                    "<br>Specific Day: 1-31."),
+    )
+    restic_month = models.CharField(
+        max_length=100,
+        default='*',
+        verbose_name=_("Month"),
+    )
+    restic_dayweek = models.CharField(
+        max_length=100,
+        default="*",
+        verbose_name=_("Day of week"),
+    )
+    restic_user = UserField(
+        max_length=60,
+        verbose_name=_("User"),
+        help_text=_("The user to run the command"),
+    )
+    restic_recursive = models.BooleanField(
+        verbose_name=_("Recursive"),
+        help_text=_("Recurse into directories"),
+        default=True,
+    )
+    restic_times = models.BooleanField(
+        verbose_name=_("Times"),
+        help_text=_("Preserve modification times"),
+        default=True,
+    )
+    restic_compress = models.BooleanField(
+        verbose_name=_("Compress"),
+        help_text=_("Compress data during the transfer"),
+        default=True,
+    )
+    restic_archive = models.BooleanField(
+        verbose_name=_("Archive"),
+        help_text=_("Archive mode"),
+        default=False,
+    )
+    restic_delete = models.BooleanField(
+        verbose_name=_("Delete"),
+        help_text=_(
+            "Delete files on the receiving side that don't exist on sender"
+        ),
+        default=False,
+    )
+    restic_quiet = models.BooleanField(
+        verbose_name=_("Quiet"),
+        help_text=_("Suppress non-error messages"),
+        default=False,
+    )
+    restic_preserveperm = models.BooleanField(
+        verbose_name=_("Preserve permissions"),
+        help_text=_(
+            "This option causes the receiving restic to set the "
+            "destination permissions to be the same as the source "
+            "permissions"
+        ),
+        default=False,
+    )
+    restic_preserveattr = models.BooleanField(
+        verbose_name=_("Preserve extended attributes"),
+        help_text=_(
+            "This option causes restic to update the remote "
+            "extended attributes to be the same as the local ones"
+        ),
+        default=False,
+    )
+    restic_delayupdates = models.BooleanField(
+        verbose_name=_("Delay Updates"),
+        help_text=_("Put all updated files into place at the end"),
+        default=True,
+    )
+    restic_extra = models.TextField(
+        verbose_name=_("Extra options"),
+        help_text=_("Extra options to restic command line (usually empty)"),
+        blank=True
+    )
+    restic_enabled = models.BooleanField(
+        default=True,
+        verbose_name=_("Enabled"),
+    )
+
+    class Meta:
+        verbose_name = _("Restic Task")
+        verbose_name_plural = _("Restic Tasks")
+        ordering = ["restic_path", "restic_desc"]
+
+    def __unicode__(self):
+        if self.restic_desc:
+            return self.rsync_desc
+        elif self.restic_mode == 'module':
+            return self.restic_remotemodule
+        else:
+            return self.restic_remotepath
+
+    def get_human_minute(self):
+        if self.restic_minute == '*':
+            return _(u'Every minute')
+        elif self.restic_minute.startswith('*/'):
+            return _(u'Every {0} minute(s)').format(
+                self.restic_minute.split('*/')[1])
+        else:
+            return self.restic_minute
+
+    def get_human_hour(self):
+        if self.restic_hour == '*':
+            return _(u'Every hour')
+        elif self.restic_hour.startswith('*/'):
+            return _(u'Every {0} hour(s)').format(
+                self.restic_hour.split('*/')[1])
+        else:
+            return self.restic_hour
+
+    def get_human_daymonth(self):
+        if self.restic_daymonth == '*':
+            return _(u'Everyday')
+        elif self.restic_daymonth.startswith('*/'):
+            return _(u'Every {0} days').format(
+                self.restic_daymonth.split('*/')[1])
+        else:
+            return self.restic_daymonth
+
+    def get_human_month(self):
+        months = self.restic_month.split(',')
+        if len(months) == 12 or self.restic_month == '*':
+            return _("Every month")
+        mchoices = dict(choices.MONTHS_CHOICES)
+        labels = []
+        for m in months:
+            labels.append(unicode(mchoices[m]))
+        return ', '.join(labels)
+
+    def get_human_dayweek(self):
+        weeks = self.restic_dayweek.split(',')
+        if len(weeks) == 7 or self.restic_dayweek == '*':
+            return _('Everyday')
+        if weeks == map(str, xrange(1, 6)):
+            return _('Weekdays')
+        if weeks == map(str, xrange(6, 8)):
+            return _('Weekends')
+        wchoices = dict(choices.WEEKDAYS_CHOICES)
+        labels = []
+        for w in weeks:
+            labels.append(unicode(wchoices[str(w)]))
+        return ', '.join(labels)
+
+    def commandline(self):
+        line = '/usr/bin/lockf -s -t 0 -k "%s" /usr/local/bin/restic' % (
+            self.restic_path
+        )
+        if self.restic_recursive:
+            line += ' -r'
+        if self.restic_times:
+            line += ' -t'
+        if self.restic_compress:
+            line += ' -z'
+        if self.restic_archive:
+            line += ' -a'
+        if self.restic_preserveperm:
+            line += ' -p'
+        if self.restic_preserveattr:
+            line += ' -X'
+        if self.restic_delete:
+            line += ' --delete-delay'
+        if self.restic_delayupdates:
+            line += ' --delay-updates'
+        if self.restic_extra:
+            line += ' %s' % self.restic_extra
+
+        # Do not use username if one is specified in host field
+        # See #5096 for more details
+        if '@' in self.restic_remotehost:
+            remote = self.restic_remotehost
+        else:
+            remote = '"%s"@%s' % (
+                self.restic_user,
+                self.restic_remotehost,
+            )
+
+        if self.restic_mode == 'module':
+            if self.restic_direction == 'push':
+                line += ' "%s" %s::"%s"' % (
+                    self.restic_path,
+                    remote,
+                    self.restic_remotemodule,
+                )
+            else:
+                line += ' %s::"%s" "%s"' % (
+                    remote,
+                    self.restic_remotemodule,
+                    self.restic_path,
+                )
+        else:
+            line += (
+                ' -e "ssh -p %d -o BatchMode=yes '
+                '-o StrictHostKeyChecking=yes"'
+            ) % (
+                self.restic_remoteport
+            )
+            if self.restic_direction == 'push':
+                line += ' "%s" %s:\\""%s"\\"' % (
+                    self.restic_path,
+                    remote,
+                    self.restic_remotepath,
+                )
+            else:
+                line += ' %s:\\""%s"\\" "%s"' % (
+                    remote,
+                    self.restic_remotepath,
+                    self.restic_path,
+                )
+        if self.restic_quiet:
+            line += ' > /dev/null 2>&1'
+        return line
+
+    def run(self):
+        proc = subprocess.Popen([
+            "/usr/local/bin/python2",
+            "/usr/local/www/freenasUI/tools/runnow.py",
+            "-t", "restic",
+            "-i", str(self.id),
+        ])
+        proc.communicate()
+
+    def delete(self):
+        super(Restic, self).delete()
+        try:
+            notifier().restart("cron")
+        except:
+            pass
+
+
 class SMARTTest(Model):
     smarttest_disks = models.ManyToManyField(
         Disk,
