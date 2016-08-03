@@ -2,7 +2,7 @@ from django.utils.html import escapejs
 from django.utils.translation import ugettext as _
 
 from freenasUI.api.resources import (
-    CronJobResourceMixin, RsyncResourceMixin, SMARTTestResourceMixin
+    CronJobResourceMixin, RsyncResourceMixin, ResticResourceMixin, SMARTTestResourceMixin
 )
 from freenasUI.freeadmin.options import BaseFreeAdmin
 from freenasUI.freeadmin.site import site
@@ -122,6 +122,52 @@ class RsyncFAdmin(BaseFreeAdmin):
             columns.insert(6 + idx, dict(column))
         return columns
 
+class ResticFAdmin(BaseFreeAdmin):
+
+    icon_model = u"resticIcon"
+    icon_object = u"resticIcon"
+    icon_add = u"AddresticTaskIcon"
+    icon_view = u"ViewresticTaskIcon"
+    exclude_fields = (
+        'id',
+        'restic_mode',
+        'restic_daymonth',
+        'restic_dayweek',
+        'restic_hour',
+        'restic_minute',
+        'restic_month',
+        'restic_recursive',
+        'restic_times',
+        'restic_compress',
+        'restic_archive',
+        'restic_delete',
+        'restic_quiet',
+        'restic_preserveperm',
+        'restic_preserveattr',
+        'restic_extra',
+    )
+    menu_child_of = 'tasks'
+    resource_mixin = ResticResourceMixin
+
+    def get_actions(self):
+        actions = super(ResticFAdmin, self).get_actions()
+        actions['RunNow'] = {
+            'button_name': _('Run Now'),
+            'on_click': """function() {
+                var mybtn = this;
+                for (var i in grid.selection) {
+                    var data = grid.row(i).data;
+                    editObject('%s', data._run_url, [mybtn,]);
+                }
+            }""" % (escapejs(_('Run Now')), ),
+        }
+        return actions
+
+    def get_datagrid_columns(self):
+        columns = super(ResticFAdmin, self).get_datagrid_columns()
+        for idx, column in enumerate(human_colums):
+            columns.insert(6 + idx, dict(column))
+        return columns
 
 class SMARTTestFAdmin(BaseFreeAdmin):
 
