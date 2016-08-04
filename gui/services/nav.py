@@ -154,3 +154,30 @@ class RsyncModView(TreeNode):
     view = u'freeadmin_services_rsyncmod_datagrid'
     icon = u'ViewAllrsyncModIcon'
     append_to = 'services.Rsync.RsyncMod'
+
+class Restic(TreeNode):
+
+    gname = 'Restic'
+    name = _(u'Restic')
+    type = u'restic'
+    icon = u'resticIcon'
+
+
+class ResticModAdd(TreeNode):
+
+    gname = 'Add'
+    name = _(u'Add Restic Module')
+    type = u'object'
+    view = u'freeadmin_services_resticmod_add'
+    kwargs = {'mf': 'ResticModForm'}
+    icon = u'AddresticModIcon'
+    append_to = 'services.Restic.RestcMod'
+
+
+class ResticModView(TreeNode):
+
+    gname = 'View'
+    name = _(u'View Restic Modules')
+    view = u'freeadmin_services_resticmod_datagrid'
+    icon = u'ViewAllresticModIcon'
+    append_to = 'services.Restic.ResticMod'
