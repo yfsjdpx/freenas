@@ -261,6 +261,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('restart', nargs='?')
     parser.add_argument('--foregound', '-f', action='store_true')
+    parser.add_argument('--debug-level', default='DEBUG', choices=[
+        'DEBUG',
+        'INFO',
+        'WARN',
+        'ERROR',
+    ])
     args = parser.parse_args()
 
     pidpath = '/var/run/middlewared.pid'
@@ -276,7 +282,7 @@ def main():
             'version': 1,
             'formatters': {
                 'simple': {
-                    'format': '[%(asctime)s %(filename)s:%(lineno)s] %(message)s'
+                    'format': '[%(asctime)s %(filename)s:%(lineno)s] (%(levelname)s) %(message)s'
                 },
             },
             'handlers': {
@@ -295,7 +301,7 @@ def main():
             'loggers': {
                 '': {
                     'handlers': ['console' if args.foregound else 'file'],
-                    'level': 'DEBUG',
+                    'level': args.debug_level,
                     'propagate': True,
                 },
             }
