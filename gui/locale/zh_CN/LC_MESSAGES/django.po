@@ -11711,7 +11711,7 @@ msgstr "光纤通道端口"
 
 #: templates/sharing/index.html:27
 msgid "Block"
-msgstr "阻止"
+msgstr "块级存储"
 
 #: templates/sharing/index.html:27
 msgid "FC"
