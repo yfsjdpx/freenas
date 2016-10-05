@@ -1273,7 +1273,6 @@ msgid "Mount Point"
 msgstr ""
 
 #: plugins/models.py:122
-#, fuzzy
 msgid "Mount Points"
 msgstr "마운트 포인트"
 
@@ -2264,12 +2263,10 @@ msgid ""
 msgstr ""
 
 #: services/models.py:821
-#, fuzzy
 msgid "Jail IP address"
 msgstr "전자우편 주소"
 
 #: services/models.py:825
-#, fuzzy
 msgid "Jail IP Netmask"
 msgstr "IPv4 서브넷 마스크"
 
@@ -2992,12 +2989,10 @@ msgid "Add Device Extent"
 msgstr ""
 
 #: services/nav.py:79
-#, fuzzy
 msgid "View Device Extents"
 msgstr "모든 정적 라우트 목록 보기"
 
 #: services/nav.py:92
-#, fuzzy
 msgid "File Extents"
 msgstr "모든 사용자 보기"
 
@@ -3007,7 +3002,6 @@ msgid "Add File Extent"
 msgstr ""
 
 #: services/nav.py:118
-#, fuzzy
 msgid "View File Extents"
 msgstr "모든 사용자 보기"
 
@@ -3506,7 +3500,6 @@ msgid "Specify custom path"
 msgstr ""
 
 #: storage/forms.py:163
-#, fuzzy
 msgid "Volume add"
 msgstr "볼륨"
 
@@ -3660,12 +3653,10 @@ msgid "Reserved space for this volume"
 msgstr "작동 된 볼륨이 없습니다."
 
 #: storage/forms.py:842
-#, fuzzy
 msgid "ZFS Volume Name"
 msgstr "ZFS 볼륨"
 
 #: storage/forms.py:845
-#, fuzzy
 msgid "Size for this ZFS Volume"
 msgstr "ZFS 볼륨 수정"
 
@@ -3885,7 +3876,7 @@ msgstr ""
 
 #: storage/models.py:281 system/models.py:409 system/models.py:618
 #: system/models.py:705
-#, fuzzy, python-format
+#, python-format
 msgid "Every %s days"
 msgstr "매일"
 
@@ -3965,7 +3956,6 @@ msgstr ""
 
 #: storage/models.py:657 storage/models.py:718
 #: templates/storage/replications.html:20 templates/storage/tasks.html:21
-#, fuzzy
 msgid "Filesystem/Volume"
 msgstr "파일시스템 타입"
 
@@ -4079,7 +4069,6 @@ msgid "View Snapshots"
 msgstr "스냅샷 보기"
 
 #: storage/nav.py:34
-#, fuzzy
 msgid "View ZFS Scrubs"
 msgstr "모든 그룹 보기"
 
@@ -4113,7 +4102,6 @@ msgstr "볼륨 보기"
 
 #: storage/nav.py:108 templates/storage/volumes.html:129
 #: templates/storage/volumes.html.py:133
-#, fuzzy
 msgid "Create ZFS Volume"
 msgstr "ZFS 볼륨 수정"
 
@@ -4143,7 +4131,6 @@ msgid "Volume successfully added."
 msgstr "%s가 추가 되었습니다. "
 
 #: storage/views.py:254
-#, fuzzy
 msgid "S.M.A.R.T. Extra Options"
 msgstr "SNMP 설정"
 
@@ -4201,7 +4188,6 @@ msgid "Rollback successful."
 msgstr ""
 
 #: storage/views.py:634
-#, fuzzy
 msgid "Snapshot successfully added."
 msgstr "%s가 삭제 되었습니다. "
 
@@ -4254,12 +4240,10 @@ msgid "Language (Require UI reload)"
 msgstr ""
 
 #: system/forms.py:214
-#, fuzzy
 msgid "You must specify a number between 1 and 65535, inclusive."
 msgstr "이 값은 0부터 65535 까지만 포함되야 합니다."
 
 #: system/forms.py:216
-#, fuzzy
 msgid "Number is required."
 msgstr "이 입력란은 필수입니다. "
 
@@ -4325,7 +4309,6 @@ msgid "Protocol"
 msgstr ""
 
 #: system/models.py:50
-#, fuzzy
 msgid "WebGUI Address"
 msgstr "IPv4 주소"
 
@@ -5295,7 +5278,6 @@ msgid "Welcome to %(sw_name)s&trade; %(sw_login_version)s"
 msgstr ""
 
 #: templates/registration/login.html:47
-#, fuzzy
 msgid "Please log in."
 msgstr "잠시 기다리세요..."
 
@@ -6133,11 +6115,9 @@ msgstr "중요 알람"
 #~ msgid "Only allow guest access"
 #~ msgstr "방문자 접속만 허용"
 
-#, fuzzy
 msgid "Invalid service pack"
 msgstr "서비스팩 적용"
 
-#, fuzzy
 msgid "View Rsync Tasks"
 msgstr "디스크 보기"
 
@@ -6225,7 +6205,6 @@ msgstr "NFS 공유 수정"
 msgid "SMB Shares"
 msgstr "UNIX 공유 추가"
 
-#, fuzzy
 msgid "NFS Share"
 msgstr "NFS 공유 수정"
 
@@ -6253,7 +6232,6 @@ msgstr "NFS 공유 수정"
 #~ msgid "Volume this group belongs to"
 #~ msgstr "이 그룹이 속해 있는 볼륨 "
 
-#, fuzzy
 msgid "successfully deleted"
 msgstr "삭제 되었습니다."
 
@@ -6272,11 +6250,9 @@ msgstr "삭제 되었습니다."
 #~ msgid "Enable DDP"
 #~ msgstr "DDP 활성화"
 
-#, fuzzy
 msgid "Cron Scheduler"
 msgstr "주기적인 스냅샷 일정"
 
-#, fuzzy
 msgid "Docs"
 msgstr "공지사항"
 
@@ -6304,7 +6280,6 @@ msgstr "공지사항"
 #~ msgid "Admin user"
 #~ msgstr "관리자 계정"
 
-#, fuzzy
 msgid "ZVol Name"
 msgstr "전체 이름"
 
@@ -6537,7 +6512,6 @@ msgid "Read-Only"
 msgstr "읽기전용"
 
 #: jails/models.py:537
-#, fuzzy
 msgid "Filesystem"
 msgstr "파일시스템 타입"
 
@@ -6561,7 +6535,6 @@ msgid "Jail successfully started."
 msgstr "Jail을 성공적으로 가져왔습니다."
 
 #: jails/views.py:399
-#, fuzzy
 msgid "Jail template successfully edited."
 msgstr "%s가 삭제 되었습니다. "
 
@@ -6801,7 +6774,6 @@ msgid "Set this if you want to allow Trusted Domains."
 msgstr ""
 
 #: services/models.py:1651
-#, fuzzy
 msgid "Kerberos Server"
 msgstr "서버 갯수"
 
@@ -9249,7 +9221,6 @@ msgid "IPv6 network range for jails and plugins"
 msgstr ""
 
 #: jails/nav.py:70
-#, fuzzy
 msgid "Add Jails"
 msgstr "%s을(를) 추가하기."
 
@@ -9405,7 +9376,6 @@ msgid "Certificate"
 msgstr ""
 
 #: services/forms.py:864
-#, fuzzy
 msgid "Incorrect password."
 msgstr "새 비밀번호"
 
@@ -9829,7 +9799,6 @@ msgid "Idmap backend for winbind."
 msgstr ""
 
 #: freeadmin/navtree.py:256
-#, fuzzy
 msgid "Initial Wizard"
 msgstr "Initiator"
 
@@ -11090,7 +11059,6 @@ msgstr "Lock user"
 
 #: storage/admin.py:629
 #: storage/forms.py:1741
-#, fuzzy
 msgid "VMWare Sync"
 msgstr "플러그인"
 
@@ -11115,7 +11083,6 @@ msgstr ""
 
 #: storage/models.py:1098
 #: templates/storage/index.html:38
-#, fuzzy
 msgid "VMWare-Snapshot"
 msgstr "스냅샷 보기"
 
@@ -11200,7 +11167,6 @@ msgid "Verifying"
 msgstr ""
 
 #: system/alertmods/boot_volume_status.py:19
-#, fuzzy
 msgid "The boot volume status is %(status)s: %(message)s"
 msgstr "%s 볼륨 상태가 %(status)s 입니다"
 
@@ -11685,7 +11651,6 @@ msgid ""
 msgstr "'iqn.'없이 시작될때 베이스 이름이 자동적으로 추가될 것입니다."
 
 #: services/models.py:835
-#, fuzzy
 msgid "Fiber Channel"
 msgstr "변경"
 
@@ -11786,7 +11751,6 @@ msgid ""
 msgstr ""
 
 #: services/views.py:334
-#, fuzzy
 msgid "Fiber Channel Ports have been successfully changed."
 msgstr "변경 사항이 반영되었습니다. "
 
@@ -12487,33 +12451,27 @@ msgid " TrueNAS Management IP Address"
 msgstr ""
 
 #: vcp/models.py:49
-#, fuzzy
 msgid " vCenter Hostname/IP Address"
 msgstr "제어기 IP 주소"
 
 #: vcp/models.py:55
-#, fuzzy
 msgid " vCenter Port"
 msgstr "원격 모니터"
 
 #: vcp/models.py:60
-#, fuzzy
 msgid " vCenter User name"
 msgstr "사용자명"
 
 #: vcp/models.py:67
-#, fuzzy
 msgid " vCenter Password"
 msgstr "비밀번호 변경"
 
 #: vcp/models.py:74
-#, fuzzy
 msgid "version"
 msgstr "버전"
 
 #: vcp/models.py:78
 #: vcp/models.py:79
-#, fuzzy
 msgid "VCenter Configuration"
 msgstr "전역 설정"
 
@@ -13122,3 +13080,422 @@ msgid ""
 "The command used to shutdown the server. You can use a custom command here "
 "to perform other tasks before shutdown.default: /sbin/shutdown -p now"
 msgstr ""
+
+#: choices.py:1045
+msgid "Rights"
+msgstr ""
+
+#: choices.py:1051
+msgid "Amazon S3"
+msgstr ""
+
+#: api/resources.py:1588
+msgid "Not ran since last boot"
+msgstr ""
+
+#: directoryservice/models.py:919
+#, fuzzy
+msgid "User Base"
+msgstr "사용자명"
+
+#: directoryservice/models.py:921
+msgid "DN of the user container in AD."
+msgstr ""
+
+#: directoryservice/models.py:926
+#, fuzzy
+msgid "Group Base"
+msgstr "Group Name"
+
+#: directoryservice/models.py:928
+#, fuzzy
+msgid "DN of the group container in AD."
+msgstr "도메인 이름"
+
+#: jails/forms.py:1038
+#, fuzzy
+msgid "This name is already in use."
+msgstr "이 IP는 이미 사용중입니다."
+
+#: jails/models.py:350
+msgid "Unable to delete associated periodic snapshot %(task)s:%(error)s"
+msgstr ""
+
+#: services/forms.py:903
+#, fuzzy
+msgid "The community must contain only alphanumeric characters _ . spaces or -"
+msgstr "Community는 반드시 알파벳 문자, _ 또는 - 만을 포함해야 합니다."
+
+#: services/models.py:148
+#: services/models.py:304
+#, fuzzy
+msgid ""
+"Use this option to override the username ('nobody' by default) which will be "
+"used for access to services which are specified as guest. Whatever "
+"privileges this user has will be available to any client connecting to the "
+"guest service. This user must exist in the password file, but does not "
+"require a valid login. The user root cannot be used as guest account."
+msgstr ""
+"손님계정에 특화된 서비스들을 이용하기 위한 계정(기본값 'nobody')를 무시하기 위해서 이 옵션을 사용하십시요. 해당 계정에게 부여된 "
+"특권이 손님계정 서비스에 연결되어지는 어떤 클라이언트에게도 부여되게 됩니다. 이 사용자 계정은 반드시 비밀번호 파일에 존재하여야 하지만, "
+"유효한 로그인 계정일 필요는 없습니다. 루트 유저는 손님 계정으로 사용될 수 없습니다."
+
+#: services/models.py:177
+#, fuzzy
+msgid "These parameters are added to the [global] section of smb.conf"
+msgstr "이 파라매터들은 smb.conf의 [global] 섹션에 추가되었습니다"
+
+#: services/models.py:220
+msgid ""
+"Specifies whether Samba should use (expensive) hostname lookups or use IP "
+"addresses instead. An example place where hostname lookups are currently "
+"used is when checking the hosts deny and hosts allow."
+msgstr ""
+
+#: services/models.py:244
+msgid ""
+"This boolean parameter controls the behaviour of smbd(8) when receiving a "
+"protocol request of \"open for execution\" from a Windows client. With Samba "
+"3.6 and older, the execution right in the ACL was not checked, so a client "
+"could execute a file even if it did not have execute rights on the file. In "
+"Samba 4.0, this has been fixed, so that by default, i.e. when this parameter "
+"is set to \"False\", \"open for execution\" is now denied when execution "
+"permissions are not present. If this parameter is set to \"True\", Samba "
+"does not check execute permissions on \"open for execution\", thus re-"
+"establishing the behavior of Samba 3.6 "
+msgstr ""
+
+#: services/models.py:265
+msgid ""
+"IP addresses to bind to. If none specified, all available interfaces that "
+"are up will be listened on."
+msgstr ""
+
+#: services/models.py:296
+#, fuzzy
+msgid "Allows guest access to all Apple shares on this box."
+msgstr "이 시스템의 모든 애플 공유들을 손님계정에게 접근을 허용합니다."
+
+#: services/models.py:315
+msgid ""
+"IP addresses to advertise and listens to. If none specified, advertise the "
+"first IP address of the system, but to listen for any incoming request."
+msgstr ""
+
+#: services/models.py:333
+#, fuzzy
+msgid "Enable/disable home directories for AFP user."
+msgstr "삼바 사용자를 위한 홈 디렉토리 활성화\\비활성화"
+
+#: services/models.py:343
+msgid "When set, overrides the default Home Share Name."
+msgstr ""
+
+#: services/models.py:360
+msgid "Map ACLs"
+msgstr ""
+
+#: services/models.py:357
+#, fuzzy
+msgid "These parameters are added to the [Global] section of afp.conf"
+msgstr "이 파라매터들은 smb.conf의 [global] 섹션에 추가되었습니다"
+
+#: services/models.py:362
+msgid ""
+"How to map the effective permissions of authenticated users: Rights ("
+"default, Unix-style permissions)Mode (ACls), or None"
+msgstr ""
+
+#: services/models.py:383
+#, fuzzy
+msgid ""
+"Specifies how many servers to create. There should be enough to handle the "
+"maximum level of concurrency from clients, typically four to six."
+msgstr ""
+"몇개의 서버를 생성할지 지정해 주세요. 클라이언트로부터 최대의 동시 사용성을 견딜 수 있게 충분하여야 하고, 일반적으로 4에서 6대 "
+"입니다."
+
+#: services/models.py:421
+msgid ""
+"Select the IP addresses to listen to for NFS requests. If left unchecked, "
+"NFS will listen on all available addresses."
+msgstr ""
+
+#: services/models.py:442
+msgid ""
+"Forces the rpc.statd daemon to bind to the specified port, for both IPv4 and "
+"IPv6 address families."
+msgstr ""
+
+#: services/models.py:451
+msgid ""
+"Force the rpc.lockd daemon to bind to the specified port, for both IPv4 and "
+"IPv6 address families."
+msgstr ""
+
+#: services/models.py:458
+msgid ""
+"Ignore the group membership sent on the wire by the NFS client and look up "
+"the group membership on the server.  Note that this option is mutually "
+"incompatible with the NFSv3 ownership model for NFSv4."
+msgstr ""
+
+#: services/models.py:467
+msgid "Enable/disable mountd logging into syslog."
+msgstr ""
+
+#: services/models.py:473
+msgid "Enable/disable statd and lockd logging into syslog."
+msgstr ""
+
+#: services/models.py:565
+#, fuzzy
+msgid ""
+"Size of extent: 0 means auto, a raw number is bytes, or suffix with KB, MB, "
+"or TB for convenience."
+msgstr "확장 크기, 0는 auto, 숫자는 파이트, 또는 편리를 위해 KB, MB, TB를 접미어로 사용가능."
+
+#: services/models.py:573
+msgid ""
+"Logical block length (512 by default). The recommended length for "
+"compatibility is 512."
+msgstr ""
+
+#: services/models.py:581
+msgid ""
+"By default, the physical blocksize is reported as the ZFS block size, which "
+"can be up to 128K. Some initiators do not work with values above 4K. "
+"Checking this disables reporting the physical blocksize."
+msgstr ""
+
+#: services/models.py:597
+#: services/models.py:700
+#, fuzzy
+msgid "A description can be entered here for your reference."
+msgstr "참고용으로 이곳에 설명을 입력할 수 있습니다."
+
+#: services/models.py:626
+msgid ""
+"RPM reported to initiators for this extent/LUN. The default is SSD because "
+"Windows will attempt to defrag non SSD devices.  This is a pathological "
+"worst-case situation for ZFS.  VMWare gives the option to use SSD LUNs as "
+"swap devices. There is some value to picking a non-SSD RPM if your extent is "
+"indeed not SSDs and the initiator will be VMWare."
+msgstr ""
+
+#: services/models.py:1441
+#, fuzzy
+msgid "Override the file creation mask (077 by default)."
+msgstr "기존 파일 마스크를 무시하고 새로운 마스크를 만들기 위해서 이 옵션을 사용합니다 (기본으로 0666)."
+
+#: services/models.py:1449
+#, fuzzy
+msgid "Override the directory creation mask (077 by default)."
+msgstr "기존 디렉토리 마스크를 무시하고 새로운 마스크를 만들기 위해서 이 옵션을 사용합니다 (기본으로 0777)."
+
+#: services/models.py:1479
+msgid ""
+"Cause the server to display the network information for the specified "
+"address to the client, on the assumption that IP address or DNS host is "
+"acting as a NAT gateway or port forwarder for the server."
+msgstr ""
+
+#: services/models.py:1935
+msgid "Control the access a remote host has to this module"
+msgstr ""
+
+#: services/models.py:1941
+#, fuzzy
+msgid "Maximum number of simultaneous connections. Default is 0 (unlimited)."
+msgstr "IP 주소별 최대 접속수 (0=무한대)."
+
+#: services/models.py:1948
+msgid ""
+"Specify the user name for file transfers to and from that module. In "
+"combination with the 'Group' option, this determines which file permissions "
+"are available. Leave this field empty to use default settings."
+msgstr ""
+
+#: services/models.py:1958
+msgid ""
+"Specify the group name for file transfers to and from that module. Leave "
+"this field empty to use default settings."
+msgstr ""
+
+#: services/models.py:1964
+msgid ""
+"This option is a comma, space, or tab delimited set of hosts which are "
+"permitted to access this module. You can specify the hosts by name or IP "
+"number. Leave this field empty to use default settings."
+msgstr ""
+
+#: services/models.py:1972
+msgid ""
+"A comma, space, or tab-delimited set of hosts which are NOT permitted to "
+"access this module. Where the lists conflict, the allow list takes "
+"precedence. In the event that it is necessary to deny all by default, use "
+"the keyword ALL (or the netmask 0.0.0.0/0) and then explicitly specify in "
+"the hosts allow parameter those hosts that should be permitted access. Leave "
+"this field empty to use default settings."
+msgstr ""
+
+#: services/models.py:1984
+#, fuzzy
+msgid ""
+"These parameters will be added to the module configuration in rsyncd.conf."
+msgstr "이 파라메터들은 inadyn.conf 파일 안의 global settings에 추가 될 것입니다."
+
+#: services/models.py:2006
+msgid ""
+"Set the interval between disk checks to N minutes. The default is 30 minutes."
+msgstr ""
+
+#: services/models.py:2018
+msgid ""
+"Report if the temperature has changed by at least N degrees Celsius since "
+"the last report. 0 to disable."
+msgstr ""
+
+#: services/models.py:2024
+msgid ""
+"Report as informational in the system log if the temperature is greater or "
+"equal than N degrees Celsius. 0 to disable."
+msgstr ""
+
+#: services/models.py:2031
+msgid ""
+"Report as critical in the system log and send an email if the temperature is "
+"greater or equal than N degrees Celsius. 0 to disable."
+msgstr ""
+
+#: services/models.py:2039
+#, fuzzy
+msgid "Destination email address. Separate email addresses with commas."
+msgstr "목적지 이메일 주소. 세미콜론으로 구분지어 주세요."
+
+#: services/models.py:2184
+msgid ""
+"The port on which WebDAV will run.<br>Do not use a port that is already in "
+"use by another service (e.g. 22 for SSH)."
+msgstr ""
+
+#: services/models.py:2193
+msgid ""
+"The port on which Secure WebDAV will run.<br>Do not use a port that is "
+"already in use by another service (e.g. 22 for SSH)."
+msgstr ""
+
+#: services/models.py:2210
+msgid ""
+"Type of HTTP Authentication for WebDAV<br>Basic Auth: Password is sent over "
+"the network as plaintext (Avoid if HTTPS is disabled) <br>Digest Auth: The "
+"hash of the password is sent over the network (more secure)."
+msgstr ""
+
+#: sharing/forms.py:464
+msgid "This option can only be used for datasets."
+msgstr ""
+
+#: sharing/models.py:334
+msgid ""
+"The credentials of the specified user is used for remote access by root."
+msgstr ""
+
+#: sharing/models.py:345
+msgid ""
+"The credentials of the specified group is used for remote access by root."
+msgstr ""
+
+#: sharing/models.py:356
+msgid ""
+"The credentials of the specified user is used for remote access by all users."
+msgstr ""
+
+#: sharing/models.py:367
+msgid ""
+"The credentials of the specified group is used for remote access by all "
+"users."
+msgstr ""
+
+#: storage/admin.py:144
+#: storage/forms.py:1196
+#: storage/forms.py:1429
+#: storage/forms.py:1513
+#, fuzzy
+msgid "Comments"
+msgstr "주석"
+
+#: system/forms.py:2613
+msgid ""
+"Cut and paste the contents of your certificate here.<br>Order in which you "
+"should paste this: <br>The Primary Certificate.<br>The Intermediate CA's "
+"Certificate(s) (optional).<br>The Root CA Certificate (optional)"
+msgstr ""
+
+#: system/forms.py:3004
+msgid "Access Key"
+msgstr ""
+
+#: system/forms.py:3008
+#, fuzzy
+msgid "Secret Key"
+msgstr "비밀번호"
+
+#: system/models.py:987
+#, fuzzy
+msgid "Account Name"
+msgstr "도메인 이름"
+
+#: system/models.py:1003
+msgid "Cloud Credential"
+msgstr ""
+
+#: tasks/forms.py:76
+#, fuzzy
+msgid "Invalid provider details."
+msgstr "서비스팩 적용"
+
+#: tasks/forms.py:83
+#, fuzzy
+msgid "Invalid credential."
+msgstr "도메인 이름"
+
+#: tasks/forms.py:86
+#, fuzzy
+msgid "Bucket is required."
+msgstr "이곳은 필수 입력란입니다."
+
+#: tasks/hook.py:40
+#: tasks/models.py:103
+msgid "Cloud Sync"
+msgstr ""
+
+#: tasks/models.py:54
+msgid "Credential"
+msgstr ""
+
+#: tasks/models.py:98
+msgid "Disabling will not stop any syncs which are in progress."
+msgstr ""
+
+#: tasks/models.py:104
+msgid "Cloud Syncs"
+msgstr ""
+
+#: tasks/views.py:53
+msgid "The cloud sync process has started"
+msgstr ""
+
+#: templates/services/core.html:113
+#, fuzzy
+msgid "CIFS Settings"
+msgstr "UPS 설정들"
+
+#: templates/system/config_upload.html:6
+msgid "All your passwords will be reset. Make sure to set them after reboot."
+msgstr ""
+
+#: templates/tasks/cloudsync_run.html:5
+#, fuzzy
+msgid "Would you like to run this cloud sync now?"
+msgstr "이 서비스를 활성화 하시겠습니까?"
